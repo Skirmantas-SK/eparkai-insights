@@ -1,5 +1,13 @@
 # Pakeitimai / Changelog
 
+## 0.2.1
+
+- Clarify that object address is optional and expects the portal option value,
+  not a manually typed street address.
+- Include the specific safe parser failure reason in setup/reauth errors instead
+  of implying all unsupported responses are caused by incorrect plant/object IDs.
+- Live portal verification remains pending; this is a setup-help and diagnostics update.
+
 ## 0.2.0
 
 - Naujas pavadinimas **eParkai įžvalgos** ir atskiras domenas `eparkai_insights`.

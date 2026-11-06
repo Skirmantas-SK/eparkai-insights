@@ -4,27 +4,30 @@
     "step": {
       "user": {
         "title": "Connect an eParkai solar plant",
-        "description": "Enter the client ID from /user/ID/generation and the exact plant/address selector values from the portal. Add another integration entry for each plant/object.",
+        "description": "Enter the client ID from /user/ID/generation and the plant option value. Object address is optional: try leaving it blank. If needed, copy the exact value from the portal address dropdown, not a typed street address. Add another entry for each plant/object.",
         "data": {
           "username": "Username / email",
           "password": "Password",
           "name": "Plant name",
           "client_id": "Client ID",
           "power_plant_id": "Plant ID",
-          "object_address": "Object address (exact selector value)",
+          "object_address": "Object selection value (optional; not a typed street address)",
           "interval_minutes": "Source interval (minutes)"
         }
       },
       "reauth_confirm": {
         "title": "Reconnect to eParkai",
         "description": "Check your credentials. If the portal asks to confirm contact details, complete that in your browser first.",
-        "data": {"username": "Username / email", "password": "Password"}
+        "data": {
+          "username": "Username / email",
+          "password": "Password"
+        }
       }
     },
     "error": {
       "invalid_auth": "Login failed. Check credentials and any portal contact-confirmation prompt.",
       "cannot_connect": "Unable to connect to eParkai. Try again later.",
-      "invalid_response": "The portal returned an unsupported generation response. Check the plant and object values."
+      "invalid_response": "Could not read generation data: {reason}. This can be a portal response-format issue. If you typed a street address, clear it and try again; when needed use the exact portal dropdown value."
     },
     "abort": {
       "already_configured": "This plant and object are already configured.",
@@ -33,8 +36,12 @@
   },
   "entity": {
     "sensor": {
-      "daily": {"name": "Latest day production"},
-      "hourly": {"name": "Latest hour production"}
+      "daily": {
+        "name": "Latest day production"
+      },
+      "hourly": {
+        "name": "Latest hour production"
+      }
     }
   }
 }

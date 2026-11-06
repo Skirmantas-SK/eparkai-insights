@@ -4,27 +4,30 @@
     "step": {
       "user": {
         "title": "Pridėti eParkai saulės elektrinę",
-        "description": "Įveskite kliento ID iš adreso /user/ID/generation ir tikslias elektrinės bei objekto parinkčių reikšmes iš eParkai portalo. Kiekvienai elektrinės ir objekto porai pridėkite atskirą integracijos įrašą.",
+        "description": "Įveskite kliento ID iš adreso /user/ID/generation ir elektrinės parinkties reikšmę. Objekto laukas neprivalomas: pirmiausia pabandykite palikti tuščią. Jei jo reikia, nukopijuokite tikslią portalo adreso parinkties value reikšmę, o ne įrašykite gatvės adresą. Kiekvienai elektrinės ir objekto porai pridėkite atskirą įrašą.",
         "data": {
           "username": "Naudotojo vardas / el. paštas",
           "password": "Slaptažodis",
           "name": "Elektrinės pavadinimas",
           "client_id": "Kliento ID",
           "power_plant_id": "Elektrinės ID",
-          "object_address": "Objekto adresas (tiksli parinkties reikšmė)",
+          "object_address": "Objekto parinkties reikšmė (neprivaloma; ne gatvės adresas)",
           "interval_minutes": "Duomenų intervalas (minutėmis)"
         }
       },
       "reauth_confirm": {
         "title": "Iš naujo prisijungti prie eParkai",
         "description": "Patikrinkite prisijungimo duomenis. Jei portalas prašo patvirtinti kontaktinius duomenis, pirmiausia tai atlikite naršyklėje.",
-        "data": {"username": "Naudotojo vardas / el. paštas", "password": "Slaptažodis"}
+        "data": {
+          "username": "Naudotojo vardas / el. paštas",
+          "password": "Slaptažodis"
+        }
       }
     },
     "error": {
       "invalid_auth": "Prisijungti nepavyko. Patikrinkite prisijungimo duomenis ir ar portalas neprašo patvirtinti kontaktinių duomenų.",
       "cannot_connect": "Nepavyko susisiekti su eParkai. Bandykite vėliau.",
-      "invalid_response": "Portalas grąžino neatpažįstamo formato gamybos duomenis. Patikrinkite elektrinės ir objekto reikšmes."
+      "invalid_response": "Nepavyko perskaityti gamybos duomenų: {reason}. Galėjo pasikeisti portalo atsakymo formatas. Jei įrašėte gatvės adresą, išvalykite lauką ir bandykite dar kartą; prireikus naudokite tikslią portalo parinkties value reikšmę."
     },
     "abort": {
       "already_configured": "Ši elektrinės ir objekto pora jau pridėta.",
@@ -33,8 +36,12 @@
   },
   "entity": {
     "sensor": {
-      "daily": {"name": "Paskutinės pilnos dienos gamyba"},
-      "hourly": {"name": "Paskutinės pilnos valandos gamyba"}
+      "daily": {
+        "name": "Paskutinės pilnos dienos gamyba"
+      },
+      "hourly": {
+        "name": "Paskutinės pilnos valandos gamyba"
+      }
     }
   }
 }

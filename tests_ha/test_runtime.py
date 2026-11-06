@@ -23,7 +23,7 @@ from custom_components.eparkai_insights.client import AuthenticationError, EPark
 from custom_components.eparkai_insights.config_flow import EParkaiConfigFlow, config_identity
 from custom_components.eparkai_insights.const import DOMAIN
 from custom_components.eparkai_insights.coordinator import EParkaiCoordinator
-from custom_components.eparkai_insights.production import TZ, expected_intervals
+from custom_components.eparkai_insights.production import ParseError, TZ, expected_intervals
 from custom_components.eparkai_insights.sensor import EParkaiSensor
 
 DATA = {
@@ -88,6 +88,13 @@ class HomeAssistantRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 with patch.object(EParkaiClient, "fetch", side_effect=error):
                     result = await flow.async_step_user(dict(DATA))
                 self.assertEqual(result["errors"], {"base": key})
+
+    async def test_parser_error_exposes_safe_reason(self):
+        flow = self.flow()
+        with patch.object(EParkaiClient, "fetch", side_effect=ParseError("Invalid generation JSON")):
+            result = await flow.async_step_user(dict(DATA))
+        self.assertEqual(result["errors"], {"base": "invalid_response"})
+        self.assertEqual(result["description_placeholders"]["reason"], "Invalid generation JSON")
 
     async def test_real_coordinator_storage_and_sensor_metadata(self):
         coordinator = self.coordinator()

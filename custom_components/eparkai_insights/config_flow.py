@@ -50,6 +50,7 @@ class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         errors = {}
+        placeholders = {"reason": ""}
         if user_input is not None:
             await self.async_set_unique_id(config_identity(user_input))
             self._abort_if_unique_id_configured()
@@ -59,17 +60,21 @@ class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except requests.RequestException:
                 errors["base"] = "cannot_connect"
-            except ParseError:
+            except ParseError as err:
                 errors["base"] = "invalid_response"
+                # ParseError messages are fixed descriptions, never response bodies.
+                placeholders["reason"] = str(err)
             else:
                 return self.async_create_entry(title=user_input["name"], data=user_input)
-        return self.async_show_form(step_id="user", data_schema=schema(), errors=errors)
+        return self.async_show_form(step_id="user", data_schema=schema(), errors=errors,
+                                    description_placeholders=placeholders)
 
     async def async_step_reauth(self, entry_data):
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(self, user_input=None):
         errors = {}
+        placeholders = {"reason": ""}
         entry = self._get_reauth_entry()
         if user_input is not None:
             data = {**entry.data, **user_input}
@@ -79,8 +84,10 @@ class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except requests.RequestException:
                 errors["base"] = "cannot_connect"
-            except ParseError:
+            except ParseError as err:
                 errors["base"] = "invalid_response"
+                placeholders["reason"] = str(err)
             else:
                 return self.async_update_reload_and_abort(entry, data_updates=user_input)
-        return self.async_show_form(step_id="reauth_confirm", data_schema=schema(True), errors=errors)
+        return self.async_show_form(step_id="reauth_confirm", data_schema=schema(True), errors=errors,
+                                    description_placeholders=placeholders)
