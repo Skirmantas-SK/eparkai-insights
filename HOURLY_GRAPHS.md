@@ -1,5 +1,42 @@
 # Valandinis gamybos grafikas / Hourly production graph
 
+## Paprasta sąranka / Easy setup (0.4.0)
+
+**Lietuviškai:** HACS atnaujinkite iki **0.4.0** ir paleiskite HA iš naujo.
+Įsitikinkite, kad integracija pridėta per **Nustatymai → Įrenginiai ir paslaugos**:
+vien HACS atsisiuntimas paskyros nesukuria. Prie **eParkai įžvalgos** spauskite
+**Konfigūruoti** ir pasirinkite energijos šaltinį. Integracija pati importuos
+valandas, patikrins statistiką ir prijungs ją prie energijos skydelio. YAML nereikia.
+
+- **Nutolusi elektrinė: gamyba + visas eksportas** – tik kai visa gamyba
+  atiduodama į tinklą. Pridedama saulės gamyba ir atskira eksporto jungtis.
+- **Tik saulės gamyba** arba **Tik atidavimas į tinklą** – pridedamas vienas šaltinis.
+- **Tik importuoti istoriją** – atnaujinama statistika, energijos nustatymai nekeičiami.
+
+Energijos skydelyje pasirinkite **vakarykštę arba paskutinę paskelbtą dieną**.
+Įrenginio diagnostikos jutiklis **Istorijos importas** turi rodyti
+**Paruošta energijos skydeliui**. Jei rodo klaidą ar nėra pilnų valandų, sąranka
+nepridės netinkamo šaltinio. Parinktys pridedamos, o esami namų skaitikliai
+nekeičiami; nereikalingus šaltinius šalinkite energijos skydelio nustatymuose.
+
+**English:** Update to **0.4.0** in HACS and restart HA. Ensure the integration
+is also added under **Settings → Devices & services**; downloading in HACS alone
+does not create an account entry. Open **eParkai įžvalgos → Configure**, choose
+the Energy connection, and submit. It imports, verifies and connects the series
+automatically. No YAML, templates, utility meters or statistic IDs to copy.
+
+Use **Remote plant: production + full export** only when all output goes to the
+grid. This adds solar production and a separate export-only grid connection,
+following [HA's dedicated solar export guidance](https://www.home-assistant.io/docs/energy/faq/#setting-up-a-dedicated-solar-export-connection-in-the-energy-dashboard).
+Solar-only and export-only are also available. Existing household meters and
+prices are preserved. Repeating setup does not duplicate sources. To remove an
+added source, use Energy settings; the integration does not continually re-add it.
+
+Open Energy and select **yesterday or the latest published day**. The diagnostic
+**History import** sensor should read **Ready for Energy**. Delayed data is not
+live power, and reporting delay does not determine whether it is export.
+The steps below are only for an optional separate Statistics graph card.
+
 ## Lietuviškai
 
 Nuo 0.3.0 eParkai įžvalgos importuoja visas pilnas valandas iš portalo savaitės

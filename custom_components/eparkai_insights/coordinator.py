@@ -70,7 +70,11 @@ class EParkaiCoordinator(DataUpdateCoordinator):
 
     async def async_import_history(self):
         """Import source-time history without treating it as live sensor updates."""
-        if self.statistics_importer is None or not self.pending_hours:
+        if self.statistics_importer is None:
+            return
+        if not self.pending_hours:
+            self.snapshot["statistics_import_status"] = "no_data"
+            self.async_update_listeners()
             return
         try:
             await self.statistics_importer.async_import(self.pending_hours)
@@ -83,4 +87,6 @@ class EParkaiCoordinator(DataUpdateCoordinator):
         else:
             self.snapshot["statistics_import_status"] = "imported"
             self.snapshot["last_statistics_import"] = datetime.now(timezone.utc).isoformat()
+            self.snapshot["imported_hours"] = len(self.pending_hours)
+        await self.store.async_save(self.snapshot)
         self.async_update_listeners()

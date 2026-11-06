@@ -41,6 +41,40 @@
       },
       "hourly": {
         "name": "Paskutinės pilnos valandos gamyba"
+      },
+      "import_status": {
+        "name": "Istorijos importas",
+        "state": {
+          "pending": "Laukiama",
+          "imported": "Paruošta energijos skydeliui",
+          "failed": "Nepavyko",
+          "no_data": "Nėra pilnų valandų"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Prijungti prie energijos skydelio",
+        "description": "Importuoja istorines valandas ir prideda pasirinktą šaltinį prie energijos skydelio. Nutolusiai elektrinei rinkitės gamybą ir atskirą eksportą tik jei visa jos gamyba atiduodama į tinklą. Esami namų skaitikliai nekeičiami. Parinktys pridedamos; pašalinti jas galima energijos skydelio nustatymuose. Vėluojantys duomenys savaime nėra eksportas.",
+        "data": {
+          "energy_mode": "Energijos skydelio šaltinis"
+        }
+      }
+    },
+    "error": {
+      "import_not_ready": "Valandų importas neparuoštas. Patikrinkite importo būsenos jutiklį ir HA žurnalus, tada bandykite dar kartą.",
+      "energy_failed": "Nepavyko prijungti energijos statistikos. Patikrinkite HA žurnalus."
+    }
+  },
+  "selector": {
+    "energy_mode": {
+      "options": {
+        "remote": "Nutolusi elektrinė: gamyba + visas eksportas",
+        "solar": "Tik saulės gamyba",
+        "export": "Tik atidavimas į tinklą",
+        "manual": "Tik importuoti istoriją"
       }
     }
   }

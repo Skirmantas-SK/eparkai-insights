@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.const import UnitOfEnergy
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -17,6 +17,7 @@ PARALLEL_UPDATES = 0
 
 async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities([EParkaiSensor(entry.runtime_data, key) for key in ("daily", "hourly")])
+    async_add_entities([EParkaiImportStatus(entry.runtime_data)])
 
 
 class EParkaiSensor(CoordinatorEntity, SensorEntity):
@@ -79,3 +80,32 @@ class EParkaiSensor(CoordinatorEntity, SensorEntity):
         if reading:
             attributes.update({key: value for key, value in reading.items() if key != "energy"})
         return attributes
+
+
+class EParkaiImportStatus(CoordinatorEntity, SensorEntity):
+    """Show history readiness in the device page without digging into attributes."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "import_status"
+    _attr_device_class = SensorDeviceClass.ENUM
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_options = ["pending", "imported", "failed", "no_data"]
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{coordinator.entry.unique_id}_import_status"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, coordinator.entry.unique_id)})
+
+    @property
+    def available(self):
+        return True
+
+    @property
+    def native_value(self):
+        return self.coordinator.snapshot.get("statistics_import_status", "pending")
+
+    @property
+    def extra_state_attributes(self):
+        return {"statistic_id": statistic_id(self.coordinator.entry),
+                "last_statistics_import": self.coordinator.snapshot.get("last_statistics_import"),
+                "imported_hours": self.coordinator.snapshot.get("imported_hours", 0)}

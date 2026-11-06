@@ -1,6 +1,6 @@
 # eParkai Insights for Home Assistant
 
-**Since 0.3.0: historical hourly production graphs.** Overnight batches fill the original production hours instead of appearing at download time. [Set up the graph and Energy dashboard](HOURLY_GRAPHS.md#english).
+**0.4.0: Energy setup without YAML.** After updating and restarting HA, open **Settings → Devices & services → eParkai įžvalgos → Configure**. Choose solar, export, or remote production + full export. Historical hours are imported and connected automatically. [Setup and details](HOURLY_GRAPHS.md).
 
 [![Validate](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
 [![Release](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)

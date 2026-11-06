@@ -41,6 +41,40 @@
       },
       "hourly": {
         "name": "Latest hour production"
+      },
+      "import_status": {
+        "name": "History import",
+        "state": {
+          "pending": "Pending",
+          "imported": "Ready for Energy",
+          "failed": "Failed",
+          "no_data": "No complete hours"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Connect to Energy dashboard",
+        "description": "Imports historical hours and adds the selected source to Energy. Choose remote production + separate export only when all plant output is exported. Existing household meters are preserved. This adds sources; remove unwanted sources in Energy settings. Delayed reporting alone does not mean grid export.",
+        "data": {
+          "energy_mode": "Energy dashboard source"
+        }
+      }
+    },
+    "error": {
+      "import_not_ready": "Hourly import is not ready. Check the import status sensor and HA logs, then retry.",
+      "energy_failed": "Could not connect energy statistics. Check HA logs."
+    }
+  },
+  "selector": {
+    "energy_mode": {
+      "options": {
+        "remote": "Remote plant: production + full export",
+        "solar": "Solar production only",
+        "export": "Grid export only",
+        "manual": "Import history only"
       }
     }
   }

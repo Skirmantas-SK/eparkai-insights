@@ -17,8 +17,13 @@ from homeassistant.setup import async_setup_component
 from homeassistant.helpers.recorder import async_initialize_recorder
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import statistics_during_period
+from homeassistant.components.recorder.statistics import list_statistic_ids
+from homeassistant.components.energy.data import async_get_manager
+from homeassistant.components.energy.validate import async_validate
+from homeassistant.helpers import entity_registry
 
 from custom_components.eparkai_insights.statistics_import import StatisticsImporter
+from custom_components.eparkai_insights.energy import async_connect_energy
 
 
 class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
@@ -31,6 +36,7 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         async_initialize_recorder(self.hass)
         self.hass.config_entries = ConfigEntries(self.hass, {})
         await self.hass.config_entries.async_initialize()
+        await entity_registry.async_load(self.hass)
         self.assertTrue(await async_setup_component(self.hass, "recorder", {
             "recorder": {"db_url": f"sqlite:///{self.directory.name}/history.db", "commit_interval": 0}
         }))
@@ -86,3 +92,47 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         other = StatisticsImporter(self.hass, SimpleNamespace(unique_id="other_object", title="Other object"))
         await other.async_import(self.hours([9]))
         self.assertEqual((await self.read())[-1]["sum"], 7)
+
+    async def test_series_is_discoverable_by_graph_and_energy_pickers(self):
+        await self.importer.async_import(self.hours([0, 0.5, 2, 0]))
+        # This is the same metadata API used by recorder/list_statistic_ids and
+        # the Statistics graph / Energy pickers, not merely a direct SQL query.
+        metadata = await self.recorder.async_add_executor_job(
+            list_statistic_ids, self.hass, {self.importer.statistic_id}, "sum",
+        )
+        self.assertEqual(len(metadata), 1)
+        self.assertEqual(metadata[0]["unit_class"], "energy")
+        self.assertTrue(metadata[0]["has_sum"])
+        self.assertIn("Valandinė gamyba", metadata[0]["name"])
+
+    async def test_energy_remote_setup_is_valid_idempotent_and_keeps_preferences(self):
+        await self.importer.async_import(self.hours([0, 0.5, 2, 0]))
+        manager = await async_get_manager(self.hass)
+        # Preserve unrelated preferences exactly, including a user-added source.
+        existing = {"type": "solar", "stat_energy_from": "other:solar", "name": "Existing"}
+        await manager.async_update({"energy_sources": [existing], "device_consumption": []})
+        await async_connect_energy(self.hass, self.entry, "remote")
+        await async_connect_energy(self.hass, self.entry, "remote")
+        sources = manager.data["energy_sources"]
+        self.assertEqual(len(sources), 3)
+        self.assertEqual(sources[0], existing)
+        self.assertEqual(sources[1]["stat_energy_from"], self.importer.statistic_id)
+        self.assertEqual(sources[2]["stat_energy_to"], self.importer.statistic_id)
+        self.assertIsNone(sources[2]["stat_energy_from"])
+        # HA's actual Energy validator must accept our solar AND export source.
+        validation = (await async_validate(self.hass)).as_dict()
+        self.assertEqual(validation["energy_sources"][1:], [[], []])
+
+    async def test_energy_setup_refuses_missing_history(self):
+        with self.assertRaises(ValueError):
+            await async_connect_energy(self.hass, self.entry, "remote")
+        manager = await async_get_manager(self.hass)
+        self.assertIsNone(manager.data)
+
+    async def test_energy_solar_and_export_can_be_added_individually(self):
+        await self.importer.async_import(self.hours([1, 2]))
+        await async_connect_energy(self.hass, self.entry, "solar")
+        manager = await async_get_manager(self.hass)
+        self.assertEqual([s["type"] for s in manager.data["energy_sources"]], ["solar"])
+        await async_connect_energy(self.hass, self.entry, "export")
+        self.assertEqual([s["type"] for s in manager.data["energy_sources"]], ["solar", "grid"])

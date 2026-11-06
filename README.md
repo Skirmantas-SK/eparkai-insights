@@ -1,6 +1,6 @@
 # eParkai įžvalgos
 
-**Nuo 0.3.0 – valandinis gamybos grafikas pagal tikrąjį gamybos laiką.** Naktį gauti duomenys užpildo ankstesnės dienos valandas. [Grafiko ir energijos skydelio nustatymas](HOURLY_GRAPHS.md).
+**0.4.0 – energijos skydelio sąranka be YAML.** Atnaujinkite, paleiskite HA iš naujo ir atverkite **Nustatymai → Įrenginiai ir paslaugos → eParkai įžvalgos → Konfigūruoti**. Pasirinkite saulės gamybą, eksportą arba nutolusią elektrinę su visu eksportu. Istorinės valandos importuojamos ir prijungiamos automatiškai. [Sąrankos instrukcija](HOURLY_GRAPHS.md).
 
 [![Patikra](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
 [![Versija](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)

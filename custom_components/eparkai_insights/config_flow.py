@@ -3,15 +3,19 @@
 from datetime import datetime
 import hashlib
 import json
+import logging
 
 import requests
 import probatio
 from homeassistant import config_entries
+from homeassistant.core import callback
 from homeassistant.helpers import selector
 
 from .client import AuthenticationError, EParkaiClient
 from .const import CONF_ADDRESS, CONF_INTERVAL, CONF_PLANT_ID, DOMAIN
 from .production import ParseError, TZ
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def config_identity(data):
@@ -38,6 +42,11 @@ def schema(reauth=False):
 
 class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        return EParkaiOptionsFlow()
 
     async def _validate(self, data):
         client = EParkaiClient(data["username"], data["password"], data["client_id"])
@@ -91,3 +100,31 @@ class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_update_reload_and_abort(entry, data_updates=user_input)
         return self.async_show_form(step_id="reauth_confirm", data_schema=schema(True), errors=errors,
                                     description_placeholders=placeholders)
+
+
+class EParkaiOptionsFlow(config_entries.OptionsFlow):
+    """One UI action to import and connect the historical series to Energy."""
+
+    async def async_step_init(self, user_input=None):
+        errors = {}
+        if user_input is not None:
+            from .energy import async_connect_energy
+
+            coordinator = self.config_entry.runtime_data
+            await coordinator.async_request_refresh()
+            if (not coordinator.last_update_success or
+                    coordinator.snapshot.get("statistics_import_status") != "imported"):
+                errors["base"] = "import_not_ready"
+            else:
+                try:
+                    await async_connect_energy(self.hass, self.config_entry, user_input["energy_mode"])
+                except Exception:
+                    _LOGGER.exception("Unable to connect eParkai statistics to Energy")
+                    errors["base"] = "energy_failed"
+                else:
+                    return self.async_create_entry(title="", data={})
+        return self.async_show_form(step_id="init", errors=errors, data_schema=probatio.Schema({
+            probatio.Required("energy_mode", default="remote"): selector.SelectSelector(
+                selector.SelectSelectorConfig(options=["remote", "solar", "export", "manual"],
+                                              translation_key="energy_mode", mode="dropdown")),
+        }))

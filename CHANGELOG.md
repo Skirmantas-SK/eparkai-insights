@@ -1,5 +1,17 @@
 # Pakeitimai / Changelog
 
+## 0.4.0
+
+- Add an integration Configure flow that imports history, verifies statistic
+  discovery, and connects it directly to Energy without YAML or copying IDs.
+- Support solar, export-only, and remote production + separate full export.
+  Existing household sources and costs are preserved; repeat setup is idempotent.
+- Add a translated History import diagnostic sensor and persist import status.
+- Test HA's actual statistic-picker metadata and Energy validation APIs, including
+  both solar and grid-export sources and preservation of existing preferences.
+- Clarify that delayed production is historical energy, not live power, and that
+  export must reflect the actual connection rather than the reporting delay.
+
 ## 0.3.0
 
 - Import every complete hour from the portal's returned window into HA long-term
