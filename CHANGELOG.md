@@ -5,6 +5,7 @@
 - Naujas pavadinimas **eParkai įžvalgos** ir atskiras domenas `eparkai_insights`.
 - New repository identity, independent of `algirdasc/hass-eparkai`.
 - Target Home Assistant 2026.11.0 and newer; use HA's own requests dependency.
+- Use the current probatio setup-form schema API and current GitHub Actions.
 - Add solar category, Lithuanian country metadata, GitHub description/topics,
   issue templates, contribution/security guidance, and MIT license.
 - Add hassfest, HACS, offline regression, and real HA runtime CI checks.

@@ -16,7 +16,7 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import UpdateFailed
 import requests
-from voluptuous_serialize import convert
+from probatio import to_field_list
 
 from custom_components.eparkai_insights import async_setup_entry, async_unload_entry
 from custom_components.eparkai_insights.client import AuthenticationError, EParkaiClient
@@ -73,7 +73,7 @@ class HomeAssistantRuntimeTests(unittest.IsolatedAsyncioTestCase):
         form = await flow.async_step_user()
         self.assertEqual(form["type"], FlowResultType.FORM)
         from homeassistant.helpers.config_validation import custom_serializer
-        serialized = convert(form["data_schema"], custom_serializer=custom_serializer)
+        serialized = to_field_list(form["data_schema"], custom_serializer=custom_serializer)
         self.assertTrue(any(item["name"] == "password" for item in serialized))
         with patch.object(EParkaiClient, "fetch", return_value=self.intervals):
             result = await flow.async_step_user(dict(DATA))

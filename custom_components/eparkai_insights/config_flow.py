@@ -5,7 +5,7 @@ import hashlib
 import json
 
 import requests
-import voluptuous as vol
+import probatio
 from homeassistant import config_entries
 from homeassistant.helpers import selector
 
@@ -22,18 +22,18 @@ def config_identity(data):
 
 def schema(reauth=False):
     fields = {
-        vol.Required("username"): str,
-        vol.Required("password"): selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)),
+        probatio.Required("username"): str,
+        probatio.Required("password"): selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)),
     }
     if not reauth:
         fields.update({
-            vol.Required("name", default="eParkai"): str,
-            vol.Required("client_id"): vol.All(str, vol.Match(r"^[0-9]+$")),
-            vol.Required(CONF_PLANT_ID): str,
-            vol.Optional(CONF_ADDRESS, default=""): str,
-            vol.Required(CONF_INTERVAL, default=60): vol.In([15, 30, 60]),
+            probatio.Required("name", default="eParkai įžvalgos"): str,
+            probatio.Required("client_id"): probatio.All(str, probatio.Match(r"^[0-9]+$")),
+            probatio.Required(CONF_PLANT_ID): str,
+            probatio.Optional(CONF_ADDRESS, default=""): str,
+            probatio.Required(CONF_INTERVAL, default=60): probatio.In([15, 30, 60]),
         })
-    return vol.Schema(fields)
+    return probatio.Schema(fields)
 
 
 class EParkaiConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
