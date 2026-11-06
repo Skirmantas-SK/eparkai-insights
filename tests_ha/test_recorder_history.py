@@ -100,7 +100,7 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         # This is the same metadata API used by recorder/list_statistic_ids and
         # the Statistics graph / Energy pickers, not merely a direct SQL query.
         metadata = await self.recorder.async_add_executor_job(
-            list_statistic_ids, self.hass, {self.importer.statistic_id}, "sum",
+            list_statistic_ids, self.hass, {self.importer.statistic_id},
         )
         self.assertEqual(len(metadata), 1)
         self.assertEqual(metadata[0]["unit_class"], "energy")

@@ -15,7 +15,7 @@ async def async_connect_energy(hass, entry, mode):
         raise ValueError("Unknown energy connection mode")
     series = statistic_id(entry)
     metadata = await get_instance(hass).async_add_executor_job(
-        list_statistic_ids, hass, {series}, "sum",
+        list_statistic_ids, hass, {series},
     )
     if not any(row["statistic_id"] == series and row["unit_class"] == "energy"
                and row["has_sum"] for row in metadata):
