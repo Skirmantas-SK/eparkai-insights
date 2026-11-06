@@ -20,6 +20,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class EParkaiSensor(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
+    _attr_icon = "mdi:solar-power"
     _attr_device_class = SensorDeviceClass.ENERGY
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
     _attr_suggested_display_precision = 3

@@ -1,5 +1,7 @@
 # eParkai saulės elektrinės gamyba
 
+<img src="custom_components/eparkai/brand/icon.png" alt="eParkai integracijos piktograma" width="128" height="128">
+
 „Home Assistant“ integracija, skirta [eParkai](https://www.eparkai.lt) saulės elektrinės pagamintos energijos duomenims stebėti.
 
 [English documentation](README.en.md)
@@ -27,6 +29,12 @@ Valanda parenkama nepriklausomai nuo dienos. Pavyzdžiui, jei lapkričio 5 d. pa
 Sąrankos vedlys, klaidų pranešimai ir jutiklių pavadinimai išversti į lietuvių kalbą. „Home Assistant“ profilyje pasirinkite lietuvių kalbą, kad būtų naudojamas šis vertimas. Anglų kalbos vertimas taip pat išsaugotas. Jau rankiniu būdu pervadintų jutiklių pavadinimai automatiškai nekeičiami.
 
 ### Rankinis diegimas
+
+Integracijos piktograma pateikiama kartu su komponentu (`brand/` kataloge).
+Jai rodyti reikia „Home Assistant“ 2026.3 arba naujesnės versijos.
+Senesnėse versijose integracija veikia be šios piktogramos. Palaikomos šviesi ir
+tamsi temos bei didelės raiškos ekranai. Tai šiai integracijai sukurta piktograma,
+ne oficialus eParkai logotipas. Jutikliai naudoja `mdi:solar-power` piktogramą.
 
 Nukopijuokite `custom_components/eparkai` į „Home Assistant“ konfigūracijos aplanko `custom_components` katalogą. Įprastas galutinis kelias: `/config/custom_components/eparkai/manifest.json`. Paleiskite „Home Assistant“ iš naujo ir pridėkite integraciją per tą patį sąrankos vedlį.
 

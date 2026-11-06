@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>eParkai — saulės elektrinės gamyba</title>
+  <circle cx="128" cy="72" r="38" fill="#F5B82E"/>
+  <line x1="128" y1="0" x2="128" y2="16" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="77" y1="21" x2="89" y2="33" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="179" y1="21" x2="167" y2="33" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="56" y1="72" x2="72" y2="72" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="184" y1="72" x2="200" y2="72" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="77" y1="123" x2="89" y2="111" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="179" y1="123" x2="167" y2="111" stroke="#F5B82E" stroke-width="12"/>
+  <line x1="128" y1="220" x2="128" y2="248" stroke="#187F72" stroke-width="16"/>
+  <line x1="88" y1="248" x2="168" y2="248" stroke="#187F72" stroke-width="16"/>
+  <polygon points="32,136 224,136 256,224 0,224" fill="#187F72"/>
+  <line x1="96" y1="144" x2="86" y2="216" stroke="#B9E8D6" stroke-width="5"/>
+  <line x1="160" y1="144" x2="170" y2="216" stroke="#B9E8D6" stroke-width="5"/>
+  <line x1="24" y1="180" x2="232" y2="180" stroke="#B9E8D6" stroke-width="5"/>
+</svg>

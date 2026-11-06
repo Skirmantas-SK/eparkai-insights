@@ -1,5 +1,7 @@
 # eParkai Solar Production for Home Assistant
 
+<img src="custom_components/eparkai/brand/icon.png" alt="eParkai integration icon" width="128" height="128">
+
 [Lietuviškas aprašas](README.md)
 
 A custom integration with two kWh sensors per solar plant/object:
@@ -26,6 +28,12 @@ Assistant profile language is Lithuanian. English translations remain available.
 The integration's listing name is **eParkai saulės elektrinės gamyba**.
 
 For manual installation:
+
+The bundled integration icon requires Home Assistant 2026.3 or newer; older
+versions continue to work without the local brand image. Light/dark and 256/512px
+variants are included. This is original integration artwork, not the official
+eParkai logo. Sensor entities use `mdi:solar-power`. The editable source is
+`assets/eparkai.svg`; regenerate PNGs on Windows with `scripts/build-brand.ps1`.
 
 1. Copy `custom_components/eparkai` into your Home Assistant configuration's
    `custom_components` directory. The resulting path is
