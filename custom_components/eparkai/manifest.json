@@ -1,0 +1,12 @@
+{
+  "domain": "eparkai",
+  "name": "eParkai Solar Production",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://git.skirmantas.eu/Fear2Die/HA-eParkai",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://git.skirmantas.eu/Fear2Die/HA-eParkai/issues",
+  "requirements": ["requests==2.32.5"],
+  "version": "0.1.0"
+}

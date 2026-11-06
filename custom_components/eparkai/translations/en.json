@@ -1,0 +1,40 @@
+{
+  "title": "eParkai Solar Production",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect an eParkai solar plant",
+        "description": "Enter the client ID from /user/ID/generation and the exact plant/address selector values from the portal. Add another integration entry for each plant/object.",
+        "data": {
+          "username": "Username / email",
+          "password": "Password",
+          "name": "Plant name",
+          "client_id": "Client ID",
+          "power_plant_id": "Plant ID",
+          "object_address": "Object address (exact selector value)",
+          "interval_minutes": "Source interval (minutes)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect to eParkai",
+        "description": "Check your credentials. If the portal asks to confirm contact details, complete that in your browser first.",
+        "data": {"username": "Username / email", "password": "Password"}
+      }
+    },
+    "error": {
+      "invalid_auth": "Login failed. Check credentials and any portal contact-confirmation prompt.",
+      "cannot_connect": "Unable to connect to eParkai. Try again later.",
+      "invalid_response": "The portal returned an unsupported generation response. Check the plant and object values."
+    },
+    "abort": {
+      "already_configured": "This plant and object are already configured.",
+      "reauth_successful": "Reauthentication successful."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "daily": {"name": "Latest day production"},
+      "hourly": {"name": "Latest hour production"}
+    }
+  }
+}
