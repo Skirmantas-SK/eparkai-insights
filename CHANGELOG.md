@@ -6,7 +6,10 @@
   not a manually typed street address.
 - Include the specific safe parser failure reason in setup/reauth errors instead
   of implying all unsupported responses are caused by incorrect plant/object IDs.
-- Live portal verification remains pending; this is a setup-help and diagnostics update.
+- Match the reference parser by ignoring non-chart Drupal settings when selecting
+  the generation series; still reject multiple actual chart series.
+- Live portal verification remains pending; the reported account-specific failure
+  is not confirmed resolved.
 
 ## 0.2.0
 

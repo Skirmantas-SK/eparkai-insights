@@ -30,10 +30,16 @@ def parse_intervals(payload):
         if not isinstance(command, dict) or command.get("command") != "settings":
             continue
         settings = command.get("settings")
-        if isinstance(settings, dict) and "product_generation_form" in settings:
-            series.append(settings["product_generation_form"])
-    if len(series) != 1 or not isinstance(series[0], dict):
-        raise ParseError("Expected exactly one generation series")
+        if isinstance(settings, dict):
+            candidate = settings.get("product_generation_form")
+            # Drupal may also emit form settings without chart data. Count only
+            # actual series, matching the supplied reference implementation.
+            if isinstance(candidate, dict) and "labels" in candidate and "data" in candidate:
+                series.append(candidate)
+    if not series:
+        raise ParseError("No generation series in the portal response")
+    if len(series) != 1:
+        raise ParseError("Multiple generation series in the portal response")
     labels, values = series[0].get("labels"), series[0].get("data")
     if not isinstance(labels, list) or not isinstance(values, list) or len(labels) != len(values):
         raise ParseError("Invalid labels/data arrays")

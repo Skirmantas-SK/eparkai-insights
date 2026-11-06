@@ -124,6 +124,15 @@ class ProductionTests(unittest.TestCase):
     def test_empty_valid_series(self):
         self.assertEqual(self.select([]), {"daily": None, "hourly": None})
 
+    def test_non_chart_settings_do_not_make_valid_series_ambiguous(self):
+        samples = day_samples(date(2026, 11, 5))
+        response = payload(samples)
+        for placeholder in (None, False, {}, {"form_id": "product_generation_form"}):
+            response.append({"command": "settings", "settings": {"product_generation_form": placeholder}})
+        self.assertEqual(len(parse_intervals(response)), 24)
+        with self.assertRaisesRegex(ParseError, "Multiple generation series"):
+            parse_intervals(response + payload(samples))
+
     def test_joined_label_and_month_typo(self):
         value = payload([(datetime(2026, 9, 1), "0.12")])
         value[0]["settings"]["product_generation_form"]["labels"] = ["2026 Rugsėo 01 00:00"]
