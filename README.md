@@ -1,5 +1,7 @@
 # eParkai įžvalgos
 
+**Nuo 0.3.0 – valandinis gamybos grafikas pagal tikrąjį gamybos laiką.** Naktį gauti duomenys užpildo ankstesnės dienos valandas. [Grafiko ir energijos skydelio nustatymas](HOURLY_GRAPHS.md).
+
 [![Patikra](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
 [![Versija](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)
 ![Home Assistant](https://img.shields.io/badge/Home_Assistant-2026.11.0%2B-blue)
@@ -11,7 +13,7 @@
 
 [English documentation](README.en.md)
 
-Kiekvienai elektrinės ir objekto porai sukuriami du jutikliai:
+Kiekvienai elektrinės ir objekto porai sukuriama valandinė statistikos serija ir du suvestinės jutikliai:
 
 | Jutiklis | Reikšmė |
 | --- | --- |
@@ -51,7 +53,7 @@ Reikalinga „Home Assistant“ 2026.11.0 arba naujesnė versija. Prisijungimo d
 
 ### Jei naudojote ankstesnę integraciją
 
-Ši integracija naudoja atskirą domeną `eparkai_insights` ir nepakeičia `algirdasc/hass-eparkai` (`eparkai`) failų. Ji pateikia dienos ir valandos jutiklius, o ne importuoja išorinę energijos statistiką. Neoficialus bendruomenės projektas, nesusijęs su eParkai ar Ignitis.
+Ši integracija naudoja atskirą domeną `eparkai_insights` ir nepakeičia `algirdasc/hass-eparkai` (`eparkai`) failų. Nuo 0.3.0 ji importuoja atskirą valandinę statistiką ir išlaiko dienos bei valandos suvestinės jutiklius. Neoficialus bendruomenės projektas, nesusijęs su eParkai ar Ignitis.
 
 Jei jau įdiegėte **mūsų 0.1.x versiją**: pasidarykite HA atsarginę kopiją, pašalinkite jos įrašą per „Įrenginiai ir paslaugos“ ir seną komponentą per HACS. Įdiekite naują saugyklą ir vieną kartą pakartokite sąranką. Senas domenas buvo `eparkai`, naujas – `eparkai_insights`; ankstesni įrašai, jutiklių ID ir podėlis automatiškai neperkeliami. Atnaujinkite korteles ir automatizacijas. Senojo GitHub adreso peradresavimas nepakeičia HA domeno.
 
@@ -89,7 +91,7 @@ Dienos rodmuo laikomas pasenusiu, jei jo data ankstesnė nei vakar Lietuvoje. Va
 - Pilnai dienai būtini visi tinkami intervalai; palaikomos ir 23 bei 25 valandų dienos, kai keičiamas laikas.
 - Rudenį pasikartojančios valandos išsaugomos atskirai su skirtingais UTC poslinkiais. Jei nėra abiejų pasikartojančių žymų, dviprasmiška valanda neskelbiama.
 - 15 ir 30 minučių intervalai sudedami į pilnos valandos energijos sumą.
-- Jutikliai rodo **istorinio laikotarpio energiją**, o ne momentinę galią ar kaupiamąjį skaitiklį. Jie neturi statistikos būsenos klasės ir nėra skirti naudoti kaip `total_increasing` šaltiniai energijos skydelyje. Galima naudoti jutiklių kortelėse, istorijoje ir automatizacijose.
+- Suvestinės jutikliai neturi statistikos būsenos klasės. Valandiniam grafikui ir energijos skydeliui naudokite atskirą **Valandinė gamyba** statistikos seriją ([instrukcija](HOURLY_GRAPHS.md)).
 - Ieškoma tik grąžintame savaitės lange; senesnė istorija papildomai neužklausiama.
 - Naudojamos portalo svetainės užklausos, o ne oficiali vieša API. Laiko žymos laikomos intervalų pradžia pagal pateiktą protokolo aprašą. Šią prielaidą ir matavimo vienetus reikia patvirtinti su tikra paskyra.
 
@@ -102,7 +104,7 @@ python -m unittest discover -s tests -v
 python -m compileall -q custom_components tests
 ```
 
-„Windows“ aplinkoje taip pat reikia `tzdata`. Testai naudoja sintetinius atsakymus ir prie portalo nesijungia. Atskirame CI rinkinyje naudojama tikra „Home Assistant“ biblioteka (2026.11.0 ir naujausia stabili versija), tikrinama sąranka, koordinatorius, saugykla ir jutiklių metaduomenys. Portalo užklausos ir platformų persiuntimas imituojami. Gyva eParkai paskyra ir visas HA vartotojo sąsajos scenarijus dar nepatikrinti. Dabartiniai rezultatai – [Actions](https://github.com/Skirmantas-SK/eparkai-insights/actions).
+„Windows“ aplinkoje taip pat reikia `tzdata`. Testai naudoja sintetinius atsakymus ir prie portalo nesijungia. Atskirame CI rinkinyje naudojama tikra „Home Assistant“ biblioteka (2026.11.0 ir naujausia stabili versija), tikrinama sąranka, koordinatorius, saugykla ir jutiklių metaduomenys. Portalo užklausos ir platformų persiuntimas imituojami. Gyva eParkai paskyra ir visas HA vartotojo sąsajos scenarijus dar nepatikrinti. Papildomi testai importuoja ir perskaito duomenis tikroje HA SQLite statistikos bazėje. Dabartiniai rezultatai – [Actions](https://github.com/Skirmantas-SK/eparkai-insights/actions).
 
 [Pakeitimai](CHANGELOG.md) · [Prisidėjimas](CONTRIBUTING.md) · [Saugumas](SECURITY.md) · [MIT licencija](LICENSE)
 

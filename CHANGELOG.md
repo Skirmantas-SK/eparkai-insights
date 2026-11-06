@@ -1,5 +1,17 @@
 # Pakeitimai / Changelog
 
+## 0.3.0
+
+- Import every complete hour from the portal's returned window into HA long-term
+  statistics at the original measurement time, even when published overnight.
+- Add a named `Valandinė gamyba` series for hourly Statistics Graph and Energy
+  Dashboard use; summary sensors expose its `statistic_id` and import status.
+- Replay batches safely after restart; revisions replace hours and recompute the
+  later cumulative totals. Missing new samples preserve previously valid history.
+- Preserve Lithuanian timezone and both autumn hours; aggregate 15/30-minute input.
+- Expose the latest complete day's timestamped `hours` attribute for custom charts.
+- Recorder is now a required HA dependency. Existing configuration remains valid.
+
 ## 0.2.1
 
 - Clarify that object address is optional and expects the portal option value,

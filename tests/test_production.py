@@ -122,7 +122,7 @@ class ProductionTests(unittest.TestCase):
                     parse_intervals(value)
 
     def test_empty_valid_series(self):
-        self.assertEqual(self.select([]), {"daily": None, "hourly": None})
+        self.assertEqual(self.select([]), {"daily": None, "hourly": None, "hours": []})
 
     def test_non_chart_settings_do_not_make_valid_series_ambiguous(self):
         samples = day_samples(date(2026, 11, 5))

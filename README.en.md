@@ -1,5 +1,7 @@
 # eParkai Insights for Home Assistant
 
+**Since 0.3.0: historical hourly production graphs.** Overnight batches fill the original production hours instead of appearing at download time. [Set up the graph and Energy dashboard](HOURLY_GRAPHS.md#english).
+
 [![Validate](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
 [![Release](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)
 ![Home Assistant](https://img.shields.io/badge/Home_Assistant-2026.11.0%2B-blue)
@@ -9,7 +11,7 @@
 
 [Lietuviškas aprašas](README.md)
 
-A custom integration with two kWh sensors per solar plant/object:
+A custom integration with a historical hourly statistic and two summary kWh sensors per solar plant/object:
 
 | Sensor | Reading |
 | --- | --- |
@@ -66,8 +68,8 @@ The GitHub repository can also be added to HACS as a custom integration reposito
 ### Migration and distinct identity
 
 The new domain `eparkai_insights` is independent of `algirdasc/hass-eparkai`'s
-`eparkai` domain. This integration provides period sensors; the other integration
-imports external energy statistics. It does not overwrite the other component.
+`eparkai` domain. This integration provides period sensors and, since 0.3.0, its own hourly
+external statistics. It does not overwrite the other component.
 Both may coexist, but both will poll the portal.
 
 If you installed **our 0.1.x versions**, back up HA, remove that config entry and
@@ -127,11 +129,9 @@ saving days. Autumn's repeated hour remains two distinct hours with different
 UTC offsets. Without both repeated labels, an ambiguous hour is not published.
 For 15/30-minute data, the hourly sensor sums all samples in the hour.
 
-These are **historical energy snapshots**, not instantaneous power or cumulative
-meters. They intentionally have no statistics state class and should not be used
-as `total_increasing` Energy Dashboard sources. They work in entity cards,
-history views, and automations. Historical Energy Dashboard import is outside
-this integration's scope.
+The two summary sensors are historical energy snapshots without a statistics state
+class. Use the separate **Valandinė gamyba** external statistic for hourly graphs
+and the Energy dashboard. See [the graph setup guide](HOURLY_GRAPHS.md#english).
 
 The portal is not a documented public API. Labels are assumed to denote interval
 starts, as in the supplied protocol guide; this convention and units need live
@@ -148,7 +148,7 @@ actual Home Assistant library (2026.11.0 and latest stable), exercising config
 flow, coordinator, storage, lifecycle APIs and sensor metadata with mocked portal
 I/O and platform forwarding. A live account and full HA UI scenario remain
 unverified. See [Actions](https://github.com/Skirmantas-SK/eparkai-insights/actions)
-for current check results and [CONTRIBUTING.md](CONTRIBUTING.md) for commands.
+for current check results, including imports into a real HA SQLite recorder, and [CONTRIBUTING.md](CONTRIBUTING.md) for commands.
 
 [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
 

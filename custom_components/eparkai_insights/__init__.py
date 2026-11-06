@@ -1,8 +1,10 @@
 """Home Assistant integration for the latest eParkai production readings."""
 
 from homeassistant.const import Platform
+from homeassistant.helpers.start import async_at_started
 
 from .coordinator import EParkaiCoordinator
+from .statistics_import import StatisticsImporter
 
 PLATFORMS = [Platform.SENSOR]
 
@@ -16,7 +18,15 @@ async def async_setup_entry(hass, entry):
         await hass.async_add_executor_job(coordinator.client.close)
         raise
     entry.runtime_data = coordinator
+    coordinator.statistics_importer = StatisticsImporter(hass, entry)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    async def import_after_start(_hass):
+        await coordinator.async_import_history()
+
+    # Avoid blocking startup on recorder's queue, which starts processing only
+    # after Home Assistant has finished starting.
+    entry.async_on_unload(async_at_started(hass, import_after_start))
     return True
 
 

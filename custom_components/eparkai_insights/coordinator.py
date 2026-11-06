@@ -23,6 +23,8 @@ class EParkaiCoordinator(DataUpdateCoordinator):
         self.client = EParkaiClient(entry.data["username"], entry.data["password"], entry.data["client_id"])
         self.store = Store(hass, 1, f"{DOMAIN}.{entry.entry_id}")
         self.snapshot = {"daily": None, "hourly": None, "last_successful_fetch": None}
+        self.statistics_importer = None
+        self.pending_hours = []
 
     async def async_load(self):
         cached = await self.store.async_load()
@@ -59,6 +61,26 @@ class EParkaiCoordinator(DataUpdateCoordinator):
                     snapshot[key] = {**value, "validated_at": now.isoformat()}
             snapshot[f"{key}_in_response"] = value is not None
         snapshot["last_successful_fetch"] = now.isoformat()
+        self.pending_hours = selected["hours"]
         await self.store.async_save(snapshot)
         self.snapshot = snapshot
+        if self.statistics_importer is not None and self.hass.is_running:
+            await self.async_import_history()
         return snapshot
+
+    async def async_import_history(self):
+        """Import source-time history without treating it as live sensor updates."""
+        if self.statistics_importer is None or not self.pending_hours:
+            return
+        try:
+            await self.statistics_importer.async_import(self.pending_hours)
+        except Exception:
+            # Recorder failure must not discard a valid portal snapshot. Retry
+            # on the next poll; database exceptions contain no portal credentials.
+            _LOGGER.exception("Unable to import eParkai hourly statistics")
+            self.snapshot["statistics_import_status"] = "failed"
+            self.update_interval = timedelta(minutes=5)
+        else:
+            self.snapshot["statistics_import_status"] = "imported"
+            self.snapshot["last_statistics_import"] = datetime.now(timezone.utc).isoformat()
+        self.async_update_listeners()

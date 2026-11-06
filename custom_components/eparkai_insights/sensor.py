@@ -10,6 +10,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .production import TZ
+from .statistics_import import statistic_id
 
 PARALLEL_UPDATES = 0
 
@@ -71,6 +72,9 @@ class EParkaiSensor(CoordinatorEntity, SensorEntity):
             "is_stale": stale or not self.coordinator.last_update_success,
             "period_available_in_response": self.coordinator.snapshot.get(f"{self.key}_in_response", False),
             "timezone": "Europe/Vilnius",
+            "statistic_id": statistic_id(self.coordinator.entry),
+            "statistics_import_status": self.coordinator.snapshot.get("statistics_import_status", "pending"),
+            "last_statistics_import": self.coordinator.snapshot.get("last_statistics_import"),
         }
         if reading:
             attributes.update({key: value for key, value in reading.items() if key != "energy"})

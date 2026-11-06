@@ -84,6 +84,7 @@ def select_production(intervals, cadence, now):
     for stamp, energy, raw in intervals:
         days[stamp.date()].append((stamp, energy, raw))
     daily = hourly = None
+    history = []
     for day in sorted(days, reverse=True):
         if day > now.date():
             continue
@@ -115,22 +116,28 @@ def select_production(intervals, cadence, now):
                 "interval_count": len(expected),
                 "last_interval": expected[-1].isoformat(),
             }
-        if hourly is None:
-            for start, samples in sorted(hours.items(), reverse=True):
-                if start + timedelta(hours=1) > now.astimezone(UTC):
-                    continue
-                # Reject off-cadence extras in this local clock hour, too.
-                local = start.astimezone(TZ)
-                if any(s.hour == local.hour and s not in expected_counts for s in observed):
-                    continue
-                if len(samples) != 60 // cadence or any(s is None or s[0] is None for _, s in samples):
-                    continue
-                hourly = {
-                    "energy": math.fsum(s[0] for _, s in samples),
-                    "start": local.isoformat(),
-                    "end": (start + timedelta(hours=1)).astimezone(TZ).isoformat(),
-                    "source_labels": [s[1] for _, s in samples],
-                    "interval_count": len(samples),
-                }
-                break
-    return {"daily": daily, "hourly": hourly}
+        day_hours = []
+        for start, samples in sorted(hours.items(), reverse=True):
+            if start + timedelta(hours=1) > now.astimezone(UTC):
+                continue
+            local = start.astimezone(TZ)
+            if any(s.hour == local.hour and s not in expected_counts for s in observed):
+                continue
+            if len(samples) != 60 // cadence or any(s is None or s[0] is None for _, s in samples):
+                continue
+            reading = {
+                "energy": math.fsum(s[0] for _, s in samples),
+                "start": local.isoformat(),
+                "end": (start + timedelta(hours=1)).astimezone(TZ).isoformat(),
+                "source_labels": [s[1] for _, s in samples],
+                "interval_count": len(samples),
+            }
+            if hourly is None:
+                hourly = reading
+            day_hours.append(reading)
+        history.extend(day_hours)
+        if daily is not None and daily["date"] == day.isoformat():
+            daily["hours"] = list(reversed(day_hours))
+    # UTC ordering is essential for the two distinct autumn 03:00 hours.
+    history.sort(key=lambda row: datetime.fromisoformat(row["start"]).timestamp())
+    return {"daily": daily, "hourly": hourly, "hours": history}

@@ -4,10 +4,11 @@
   "categories": ["energy.solar_batteries"],
   "codeowners": ["@Skirmantas-SK"],
   "config_flow": true,
+  "dependencies": ["recorder"],
   "documentation": "https://github.com/Skirmantas-SK/eparkai-insights",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/Skirmantas-SK/eparkai-insights/issues",
   "requirements": [],
-  "version": "0.2.1"
+  "version": "0.3.0"
 }
