@@ -20,7 +20,7 @@ from probatio import to_field_list
 
 from custom_components.eparkai_insights import async_setup_entry, async_unload_entry
 from custom_components.eparkai_insights.client import AuthenticationError, EParkaiClient
-from custom_components.eparkai_insights.config_flow import EParkaiConfigFlow, config_identity
+from custom_components.eparkai_insights.config_flow import EParkaiConfigFlow, EParkaiOptionsFlow, config_identity
 from custom_components.eparkai_insights.const import DOMAIN
 from custom_components.eparkai_insights.coordinator import EParkaiCoordinator
 from custom_components.eparkai_insights.production import ParseError, TZ, expected_intervals
@@ -140,3 +140,26 @@ class HomeAssistantRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 await coordinator._async_update_data()
         self.assertEqual(coordinator.snapshot, before)
         self.assertTrue(EParkaiSensor(coordinator, "daily").available)
+
+    async def test_options_flow_connects_without_copying_statistic_ids(self):
+        coordinator = self.coordinator()
+        self.entry.runtime_data = coordinator
+        flow = EParkaiOptionsFlow()
+        flow.hass = self.hass
+        flow.handler = self.entry.entry_id
+        with patch.object(self.hass.config_entries, "async_get_known_entry", return_value=self.entry):
+            form = await flow.async_step_init()
+            from homeassistant.helpers.config_validation import custom_serializer
+            fields = to_field_list(form["data_schema"], custom_serializer=custom_serializer)
+            self.assertEqual([field["name"] for field in fields], ["energy_mode"])
+            with patch.object(coordinator, "async_request_refresh", new_callable=AsyncMock), patch(
+                "custom_components.eparkai_insights.energy.async_connect_energy", new_callable=AsyncMock
+            ) as connect:
+                result = await flow.async_step_init({"energy_mode": "remote"})
+                self.assertEqual(result["errors"], {"base": "import_not_ready"})
+                connect.assert_not_awaited()
+                coordinator.snapshot["statistics_import_status"] = "imported"
+                coordinator.last_update_success = True
+                result = await flow.async_step_init({"energy_mode": "remote"})
+                self.assertEqual(result["type"], FlowResultType.CREATE_ENTRY)
+                connect.assert_awaited_once_with(self.hass, self.entry, "remote")

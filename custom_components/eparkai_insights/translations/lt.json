@@ -66,6 +66,9 @@
     "error": {
       "import_not_ready": "Valandų importas neparuoštas. Patikrinkite importo būsenos jutiklį ir HA žurnalus, tada bandykite dar kartą.",
       "energy_failed": "Nepavyko prijungti energijos statistikos. Patikrinkite HA žurnalus."
+    },
+    "abort": {
+      "not_loaded": "Integracija neįkelta. Pirmiausia ištaisykite jos sąrankos klaidą arba paleiskite HA iš naujo."
     }
   },
   "selector": {

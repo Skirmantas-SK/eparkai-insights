@@ -66,6 +66,9 @@
     "error": {
       "import_not_ready": "Hourly import is not ready. Check the import status sensor and HA logs, then retry.",
       "energy_failed": "Could not connect energy statistics. Check HA logs."
+    },
+    "abort": {
+      "not_loaded": "The integration is not loaded. Resolve its setup error or restart HA first."
     }
   },
   "selector": {

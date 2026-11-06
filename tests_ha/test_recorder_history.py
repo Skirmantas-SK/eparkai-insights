@@ -20,7 +20,7 @@ from homeassistant.components.recorder.statistics import statistics_during_perio
 from homeassistant.components.recorder.statistics import list_statistic_ids
 from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import async_validate
-from homeassistant.helpers import entity_registry
+from homeassistant.helpers import device_registry, entity_registry
 
 from custom_components.eparkai_insights.statistics_import import StatisticsImporter
 from custom_components.eparkai_insights.energy import async_connect_energy
@@ -36,6 +36,8 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         async_initialize_recorder(self.hass)
         self.hass.config_entries = ConfigEntries(self.hass, {})
         await self.hass.config_entries.async_initialize()
+        device_registry.async_setup(self.hass)
+        await device_registry.async_load(self.hass)
         await entity_registry.async_load(self.hass)
         self.assertTrue(await async_setup_component(self.hass, "recorder", {
             "recorder": {"db_url": f"sqlite:///{self.directory.name}/history.db", "commit_interval": 0}

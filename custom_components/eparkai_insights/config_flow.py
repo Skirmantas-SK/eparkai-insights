@@ -107,10 +107,12 @@ class EParkaiOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         errors = {}
+        coordinator = getattr(self.config_entry, "runtime_data", None)
+        if coordinator is None:
+            return self.async_abort(reason="not_loaded")
         if user_input is not None:
             from .energy import async_connect_energy
 
-            coordinator = self.config_entry.runtime_data
             await coordinator.async_request_refresh()
             if (not coordinator.last_update_success or
                     coordinator.snapshot.get("statistics_import_status") != "imported"):
