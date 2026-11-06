@@ -16,7 +16,13 @@ A custom integration with a historical hourly statistic and two summary kWh sens
 | Sensor | Reading |
 | --- | --- |
 | Latest day production | Total energy for the newest **complete day before today** in the provider's response |
-| Latest hour production | Total energy for the newest **complete, elapsed hour**, independently of the daily selection |
+| Data date | Lithuanian calendar date belonging to the displayed daily total |
+| Latest hour production (disabled by default) | Total energy for the newest **complete, elapsed hour**, independently of the daily selection |
+
+The daily total and Data date are the main summary sensors. History import is a
+diagnostic sensor. The optional latest-hour sensor can be enabled in entity settings;
+updating preserves existing enable/disable choices. Energy uses the separate hourly
+statistics series, regardless of whether the latest-hour summary sensor is enabled.
 
 For example, if November 5 has only three published hours but November 4 is
 complete, the daily sensor shows November 4 and the hourly sensor shows the

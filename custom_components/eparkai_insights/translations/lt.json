@@ -50,6 +50,9 @@
           "failed": "Nepavyko",
           "no_data": "Nėra pilnų valandų"
         }
+      },
+      "data_date": {
+        "name": "Duomenų data"
       }
     }
   },

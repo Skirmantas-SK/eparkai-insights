@@ -24,7 +24,7 @@ from custom_components.eparkai_insights.config_flow import EParkaiConfigFlow, EP
 from custom_components.eparkai_insights.const import DOMAIN
 from custom_components.eparkai_insights.coordinator import EParkaiCoordinator
 from custom_components.eparkai_insights.production import ParseError, TZ, expected_intervals
-from custom_components.eparkai_insights.sensor import EParkaiSensor
+from custom_components.eparkai_insights.sensor import EParkaiSensor, EParkaiDataDate
 
 DATA = {
     "name": "Test solar", "username": "synthetic", "password": "not-a-real-password",
@@ -110,9 +110,17 @@ class HomeAssistantRuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(daily.icon, "mdi:solar-power")
         self.assertEqual(daily.device_info["identifiers"], {(DOMAIN, self.entry.unique_id)})
         self.assertIn("date", daily.extra_state_attributes)
+        data_date = EParkaiDataDate(coordinator)
+        self.assertEqual(data_date.native_value.isoformat(), daily.extra_state_attributes["date"])
+        self.assertEqual(data_date.device_class, "date")
+        self.assertIsNone(data_date.native_unit_of_measurement)
+        self.assertTrue(data_date.entity_registry_enabled_default)
+        self.assertTrue(daily.entity_registry_enabled_default)
+        self.assertFalse(hourly.entity_registry_enabled_default)
         restored = self.coordinator()
         await restored.async_load()
         self.assertEqual(restored.snapshot, coordinator.snapshot)
+        self.assertEqual(EParkaiDataDate(restored).native_value, data_date.native_value)
 
     async def test_setup_and_unload_use_current_platform_api(self):
         with patch.object(EParkaiClient, "fetch", return_value=self.intervals), patch.object(

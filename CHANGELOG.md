@@ -1,5 +1,13 @@
 # Pakeitimai / Changelog
 
+## 0.4.1
+
+- Keep the latest complete day's production and add a visible Data date sensor
+  showing that same day's Lithuanian calendar date, including cached readings.
+- Disable the latest-hour summary sensor by default for new entities. Existing
+  entity preferences are preserved; it can still be enabled in entity settings.
+- Keep the import-status sensor and historical hourly Energy series unchanged.
+
 ## 0.4.0
 
 - Add an integration Configure flow that imports history, verifies statistic

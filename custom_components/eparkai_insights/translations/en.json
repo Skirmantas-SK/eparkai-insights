@@ -50,6 +50,9 @@
           "failed": "Failed",
           "no_data": "No complete hours"
         }
+      },
+      "data_date": {
+        "name": "Data date"
       }
     }
   },

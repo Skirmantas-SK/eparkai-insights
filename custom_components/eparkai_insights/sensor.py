@@ -1,6 +1,6 @@
 """Latest complete day and latest complete hour of production, in kWh."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.const import UnitOfEnergy
@@ -17,7 +17,7 @@ PARALLEL_UPDATES = 0
 
 async def async_setup_entry(hass, entry, async_add_entities):
     async_add_entities([EParkaiSensor(entry.runtime_data, key) for key in ("daily", "hourly")])
-    async_add_entities([EParkaiImportStatus(entry.runtime_data)])
+    async_add_entities([EParkaiDataDate(entry.runtime_data), EParkaiImportStatus(entry.runtime_data)])
 
 
 class EParkaiSensor(CoordinatorEntity, SensorEntity):
@@ -35,6 +35,7 @@ class EParkaiSensor(CoordinatorEntity, SensorEntity):
         self.key = key
         self._attr_translation_key = key
         self._attr_unique_id = f"{coordinator.entry.unique_id}_{key}"
+        self._attr_entity_registry_enabled_default = key != "hourly"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, coordinator.entry.unique_id)},
             name=coordinator.entry.title, manufacturer="eParkai",
@@ -80,6 +81,28 @@ class EParkaiSensor(CoordinatorEntity, SensorEntity):
         if reading:
             attributes.update({key: value for key, value in reading.items() if key != "energy"})
         return attributes
+
+
+class EParkaiDataDate(EParkaiSensor):
+    """The Lithuanian calendar date belonging to the displayed daily total."""
+
+    _attr_device_class = SensorDeviceClass.DATE
+    _attr_native_unit_of_measurement = None
+    _attr_suggested_display_precision = None
+    _attr_icon = "mdi:calendar"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "daily")
+        self._attr_translation_key = "data_date"
+        self._attr_unique_id = f"{coordinator.entry.unique_id}_data_date"
+
+    @property
+    def native_value(self):
+        return date.fromisoformat(self.reading["date"]) if self.reading else None
+
+    @property
+    def extra_state_attributes(self):
+        return {"timezone": "Europe/Vilnius"}
 
 
 class EParkaiImportStatus(CoordinatorEntity, SensorEntity):

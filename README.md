@@ -18,7 +18,13 @@ Kiekvienai elektrinės ir objekto porai sukuriama valandinė statistikos serija 
 | Jutiklis | Reikšmė |
 | --- | --- |
 | Paskutinės pilnos dienos gamyba | Naujausios **pilnos dienos iki šiandien**, kuriai yra visi duomenys, energijos suma (kWh) |
-| Paskutinės pilnos valandos gamyba | Naujausios **pasibaigusios valandos**, kuriai yra visi duomenys, energijos suma (kWh) |
+| Duomenų data | Rodomos dienos gamybos duomenų kalendorinė data Lietuvos laiku |
+| Paskutinės pilnos valandos gamyba (pagal nutylėjimą išjungta) | Naujausios **pasibaigusios valandos**, kuriai yra visi duomenys, energijos suma (kWh) |
+
+Pagrindiniai suvestinės jutikliai yra dienos gamyba ir duomenų data. Istorijos
+importas rodomas diagnostikoje. Valandos jutiklį galima įjungti jo nustatymuose;
+atnaujinimas išsaugo esamų jutiklių įjungimo pasirinkimą. Energijos skydelis naudoja
+atskirą valandinę statistiką ir veikia net išjungus valandos suvestinės jutiklį.
 
 Valanda parenkama nepriklausomai nuo dienos. Pavyzdžiui, jei lapkričio 5 d. paskelbtos tik trys valandos, o lapkričio 4 d. duomenys pilni, dienos jutiklis rodys lapkričio 4 d., o valandos jutiklis – naujausią pilną lapkričio 5 d. valandą. Nulinė gamyba yra tinkamas rodmuo, taip pat ir naktį. Trūkstami ar netinkami duomenys nuliais nekeičiami.
 
