@@ -1,6 +1,7 @@
 """Import delayed provider batches into Home Assistant's hourly recorder."""
 
 import asyncio
+import math
 from datetime import datetime, timezone
 
 from homeassistant.components.recorder import get_instance
@@ -69,3 +70,17 @@ class StatisticsImporter:
                 }
                 async_add_external_statistics(self.hass, metadata, statistics)
                 await self._async_wait_for_recorder(recorder)
+                # Queue completion alone does not prove that recorder committed:
+                # its worker can log a DB failure without raising in this task.
+                saved = await recorder.async_add_executor_job(
+                    statistics_during_period, self.hass, start, None,
+                    {self.statistic_id}, "hour", None, {"state", "sum"},
+                )
+                by_start = {row["start"]: row for row in saved.get(self.statistic_id, [])}
+                for expected in statistics:
+                    actual = by_start.get(expected["start"].timestamp())
+                    if actual is None or any(
+                        actual.get(key) is None or not math.isclose(actual[key], expected[key], abs_tol=1e-8)
+                        for key in ("state", "sum")
+                    ):
+                        raise RuntimeError("Recorder did not persist the expected hourly statistics")

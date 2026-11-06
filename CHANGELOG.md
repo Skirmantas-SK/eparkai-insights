@@ -7,6 +7,7 @@
 - Support solar, export-only, and remote production + separate full export.
   Existing household sources and costs are preserved; repeat setup is idempotent.
 - Add a translated History import diagnostic sensor and persist import status.
+- Read hourly rows back from recorder before reporting a successful import.
 - Test HA's actual statistic-picker metadata and Energy validation APIs, including
   both solar and grid-export sources and preservation of existing preferences.
 - Clarify that delayed production is historical energy, not live power, and that

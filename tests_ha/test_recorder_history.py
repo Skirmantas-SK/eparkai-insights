@@ -7,6 +7,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -130,6 +131,11 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
             await async_connect_energy(self.hass, self.entry, "remote")
         manager = await async_get_manager(self.hass)
         self.assertIsNone(manager.data)
+
+    async def test_import_does_not_report_success_when_recorder_drops_batch(self):
+        with patch("custom_components.eparkai_insights.statistics_import.async_add_external_statistics"):
+            with self.assertRaisesRegex(RuntimeError, "did not persist"):
+                await self.importer.async_import(self.hours([1, 2]))
 
     async def test_energy_solar_and_export_can_be_added_individually(self):
         await self.importer.async_import(self.hours([1, 2]))
