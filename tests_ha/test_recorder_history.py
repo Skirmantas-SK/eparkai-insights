@@ -11,6 +11,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from homeassistant.config_entries import ConfigEntries
+from homeassistant import loader
 from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
 from homeassistant.components.recorder import get_instance
@@ -22,7 +23,10 @@ from custom_components.eparkai_insights.statistics_import import StatisticsImpor
 class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
         self.hass = HomeAssistant(self.directory.name)
+        self.addAsyncCleanup(self.hass.async_stop, force=True)
+        loader.async_setup(self.hass)
         self.hass.config_entries = ConfigEntries(self.hass, {})
         await self.hass.config_entries.async_initialize()
         self.assertTrue(await async_setup_component(self.hass, "recorder", {
@@ -35,10 +39,6 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         self.entry = SimpleNamespace(unique_id="synthetic_plant", title="Synthetic plant")
         self.importer = StatisticsImporter(self.hass, self.entry)
         self.start = datetime(2026, 10, 25, 0, tzinfo=timezone.utc)
-
-    async def asyncTearDown(self):
-        await self.hass.async_stop(force=True)
-        self.directory.cleanup()
 
     def hours(self, values):
         return [{"start": (self.start + timedelta(hours=index)).isoformat(), "energy": energy}
