@@ -27,7 +27,7 @@ def schema(reauth=False):
     }
     if not reauth:
         fields.update({
-            vol.Required("name", default="eParkai Solar"): str,
+            vol.Required("name", default="eParkai"): str,
             vol.Required("client_id"): vol.All(str, vol.Match(r"^[0-9]+$")),
             vol.Required(CONF_PLANT_ID): str,
             vol.Optional(CONF_ADDRESS, default=""): str,

@@ -1,107 +1,80 @@
-# eParkai Solar Production for Home Assistant
+# eParkai saulės elektrinės gamyba
 
-A custom integration with two kWh sensors per solar plant/object:
+„Home Assistant“ integracija, skirta [eParkai](https://www.eparkai.lt) saulės elektrinės pagamintos energijos duomenims stebėti.
 
-| Sensor | Reading |
+[English documentation](README.en.md)
+
+Kiekvienai elektrinės ir objekto porai sukuriami du jutikliai:
+
+| Jutiklis | Reikšmė |
 | --- | --- |
-| Latest day production | Total energy for the newest **complete day before today** in the provider's response |
-| Latest hour production | Total energy for the newest **complete, elapsed hour**, independently of the daily selection |
+| Paskutinės pilnos dienos gamyba | Naujausios **pilnos dienos iki šiandien**, kuriai yra visi duomenys, energijos suma (kWh) |
+| Paskutinės pilnos valandos gamyba | Naujausios **pasibaigusios valandos**, kuriai yra visi duomenys, energijos suma (kWh) |
 
-For example, if November 5 has only three published hours but November 4 is
-complete, the daily sensor shows November 4 and the hourly sensor shows the
-latest complete hour from November 5. Zero production is valid data, including
-nighttime hours. Missing or invalid intervals are never silently replaced by zero.
+Valanda parenkama nepriklausomai nuo dienos. Pavyzdžiui, jei lapkričio 5 d. paskelbtos tik trys valandos, o lapkričio 4 d. duomenys pilni, dienos jutiklis rodys lapkričio 4 d., o valandos jutiklis – naujausią pilną lapkričio 5 d. valandą. Nulinė gamyba yra tinkamas rodmuo, taip pat ir naktį. Trūkstami ar netinkami duomenys nuliais nekeičiami.
 
-## Install
+## Diegimas per HACS
 
-1. Copy `custom_components/eparkai` into your Home Assistant configuration's
-   `custom_components` directory. The resulting path is
-   `/config/custom_components/eparkai/manifest.json` on a typical installation.
-2. Restart Home Assistant.
-3. Open **Settings → Devices & services → Add integration → eParkai Solar Production**.
-4. Supply your login, client ID, plant ID, exact object address selector value,
-   and sampling interval (60 minutes by default; 15 and 30 are supported).
-5. Add another integration entry for each plant/object combination.
+1. Atidarykite HACS ir pasirinkite **Custom repositories** (pasirinktinės saugyklos).
+2. Įveskite `https://github.com/Skirmantas-SK/HA-eParkai` ir pasirinkite tipą **Integration**.
+3. Suraskite **eParkai** ir atsisiųskite integraciją.
+4. Paleiskite „Home Assistant“ iš naujo.
+5. Atidarykite **Nustatymai → Įrenginiai ir paslaugos → Pridėti integraciją** ir ieškokite **eParkai**.
+6. Sąrankos vedlyje įveskite prisijungimo duomenis, kliento ID, elektrinės ID, tikslią objekto adreso parinkties reikšmę ir duomenų intervalą.
 
-Requires Home Assistant 2025.1 or newer. Credentials are saved in Home Assistant's
-config entry storage; keep that storage and backups private. Session cookies stay
-in memory and are renewed after restart. No credentials belong in this repository.
+**`configuration.yaml` redaguoti nereikia.** Kiekvienai papildomai elektrinės ir objekto porai integraciją pridėkite dar kartą. Numatytasis intervalas – 60 minučių; taip pat palaikomi 15 ir 30 minučių intervalai.
 
-Repository ZIP downloads contain the `custom_components/eparkai` directory.
-This repository is hosted on a private Git service; manual installation is the
-supported route. The included HACS metadata also permits a future GitHub mirror.
+Sąrankos vedlys, klaidų pranešimai ir jutiklių pavadinimai išversti į lietuvių kalbą. „Home Assistant“ profilyje pasirinkite lietuvių kalbą, kad būtų naudojamas šis vertimas. Anglų kalbos vertimas taip pat išsaugotas. Jau rankiniu būdu pervadintų jutiklių pavadinimai automatiškai nekeičiami.
 
-If replacing `algirdasc/hass-eparkai`, back up the old component, replace its
-`custom_components/eparkai` directory, and remove its `eparkai:` YAML block before
-restarting. This integration uses the same domain and cannot run alongside it.
-It creates sensors and does not continue the old external-statistics importer.
-Existing recorded statistics are not deleted.
+### Rankinis diegimas
 
-## Find the IDs
+Nukopijuokite `custom_components/eparkai` į „Home Assistant“ konfigūracijos aplanko `custom_components` katalogą. Įprastas galutinis kelias: `/config/custom_components/eparkai/manifest.json`. Paleiskite „Home Assistant“ iš naujo ir pridėkite integraciją per tą patį sąrankos vedlį.
 
-Sign in at [eParkai](https://www.eparkai.lt), then visit the generation page.
-The number in `/user/12345/generation` is the client ID. In the page source, find
-the `generation_electricity` selector and use the plant's option value. Use the
-exact option value from the `address` / `edit-address` selector for the object
-address, including punctuation and spacing. Leave it blank only when no object
-selection is needed. IDs are strings, so leading zeros are retained.
+Reikalinga „Home Assistant“ 2025.1 arba naujesnė versija. Prisijungimo duomenys saugomi „Home Assistant“ konfigūracijos įraše; saugokite šį katalogą ir atsargines kopijas. Sesijos slapukai laikomi atmintyje, po paleidimo iš naujo prisijungiama pakartotinai. Į Git saugyklą prisijungimo duomenų nekelkite.
 
-## Data and freshness
+### Jei naudojote ankstesnę integraciją
 
-The integration fetches the provider's week view at startup and every hour.
-Transient failures retry after 5 minutes, doubling to a maximum of 60 minutes.
-Authentication failures trigger Home Assistant's reauthentication flow and stop
-automatic password attempts until reauthentication or reload. If prompted, log
-into the portal in a browser and confirm contact information first.
+Keisdami `algirdasc/hass-eparkai`, pasidarykite seno komponento atsarginę kopiją, pakeiskite `custom_components/eparkai` katalogą ir prieš paleisdami iš naujo pašalinkite seną `eparkai:` bloką iš YAML konfigūracijos. Abi integracijos naudoja tą patį domeną ir kartu veikti negali. Ši versija sukuria jutiklius ir nebetęsia ankstesnio išorinės statistikos importavimo. Jau įrašyta statistika neištrinama.
 
-Daily attributes include `date`, `last_interval`, and `interval_count`. Hourly
-attributes include `start`, `end`, `source_labels`, and `interval_count`.
-Both sensors expose `validated_at`, `last_successful_fetch`, `last_update_success`,
-`period_available_in_response`, and `is_stale`.
+## Kur rasti ID ir objekto adresą
 
-The latest validated reading is persisted through restarts and retained when a
-response has no complete period or a subsequent request fails. Without a stored
-reading the corresponding sensor is unavailable. Initial network/authentication
-failures defer setup until connectivity/login is restored; cached readings are
-loaded when setup succeeds. A valid hourly reading can exist without a daily one.
-Corrected values replace a period's previous reading; they are never added twice.
+Prisijunkite prie eParkai portalo ir atidarykite gamybos puslapį.
 
-Daily data is stale when older than yesterday in Lithuania; hourly data is stale
-when its end is more than three hours ago. Either is also stale after three hours
-without validation of that reading, or after a failed update. Freshness is
-evaluated on coordinator updates. Delayed but valid provider readings can be stale.
+- Adrese `/user/12345/generation` skaičius `12345` yra kliento ID.
+- Puslapio HTML šaltinyje raskite `generation_electricity` parinkčių lauką: pasirinktos elektrinės `option` elemento `value` yra elektrinės ID.
+- Objekto adresui naudokite tikslią `address` / `edit-address` parinkties `value` reikšmę su visais tarpais ir skyrybos ženklais. Palikite tuščią tik tada, kai objekto rinktis nereikia.
 
-All calendar calculations use `Europe/Vilnius`, regardless of the HA timezone.
-Complete days require all expected valid samples, including 23/25-hour daylight
-saving days. Autumn's repeated hour remains two distinct hours with different
-UTC offsets. Without both repeated labels, an ambiguous hour is not published.
-For 15/30-minute data, the hourly sensor sums all samples in the hour.
+ID laikomi tekstu, todėl pradžioje esantys nuliai išsaugomi.
 
-These are **historical energy snapshots**, not instantaneous power or cumulative
-meters. They intentionally have no statistics state class and should not be used
-as `total_increasing` Energy Dashboard sources. They work in entity cards,
-history views, and automations. Historical Energy Dashboard import is outside
-this integration's scope.
+## Duomenys ir jų atnaujinimas
 
-The portal is not a documented public API. Labels are assumed to denote interval
-starts, as in the supplied protocol guide; this convention and units need live
-account verification. Only the returned week window is searched; there is no
-older-history pagination. No live account credentials were supplied during development.
+Integracija užklausia portalo savaitės duomenis paleidimo metu ir kas valandą. Po laikinos ryšio klaidos bandoma po 5 minučių; pakartojimo intervalas dvigubinamas iki 60 minučių. Prisijungimo klaida įjungia pakartotinio autentifikavimo vedlį. Automatiniai slaptažodžio bandymai sustabdomi iki pakartotinio prisijungimo arba integracijos įkėlimo iš naujo. Jei portalas prašo patvirtinti kontaktinius duomenis, pirmiausia tai atlikite naršyklėje.
 
-## Development
+Dienos jutiklio atributai: `date`, `last_interval`, `interval_count`. Valandos jutiklio atributai: `start`, `end`, `source_labels`, `interval_count`. Abu taip pat pateikia `validated_at`, `last_successful_fetch`, `last_update_success`, `period_available_in_response`, `is_stale` ir `timezone`. Atributų raktai palikti stabilūs, kad juos būtų patogu naudoti automatizacijose.
 
-Run `python -m unittest discover -s tests -v` with Python 3.13 and `requests` installed.
-Windows also needs `tzdata`. Run `python -m compileall -q custom_components tests`
-for a syntax check. Tests use synthetic responses and do not contact the portal.
-Coordinator tests use lightweight Home Assistant boundary doubles; a full Home
-Assistant runtime/config-flow test and live account test have not been run.
+Paskutiniai patikrinti rodmenys išsaugomi ir atkuriami po paleidimo iš naujo. Jei atsakyme nėra pilno laikotarpio arba užklausa nepavyksta, ankstesni rodmenys išlaikomi. Kol tinkamo rodmens nėra, atitinkamas jutiklis nepasiekiamas. Pradinė ryšio ar prisijungimo klaida atideda integracijos įkėlimą; saugoti duomenys įkeliami sėkmingai užbaigus sąranką. Valandos rodmuo gali būti pateikiamas ir neturint pilnos dienos. Pataisyti to paties laikotarpio duomenys pakeičia ankstesnius rodmenis ir nėra pridedami antrą kartą.
 
-The implementation follows the website protocol from
-[algirdasc/hass-eparkai](https://github.com/algirdasc/hass-eparkai)
-(reviewed at commit `cc05ea2af1f2ffd54f6f9c6ca4a502a3bf2175d5`) and the supplied
-[EPARKAI_INTEGRATION.md](EPARKAI_INTEGRATION.md). The provider and aggregation code
-is newly implemented here, with stricter validation and independently selected
-daily/hourly readings. Home Assistant's
-[coordinator](https://developers.home-assistant.io/docs/integration_fetching_data/)
-and [config flow](https://developers.home-assistant.io/docs/config_entries_config_flow_handler/)
-patterns provide polling and UI setup.
+Dienos rodmuo laikomas pasenusiu, jei jo data ankstesnė nei vakar Lietuvoje. Valandos rodmuo pasenęs, jei nuo jos pabaigos praėjo daugiau nei trys valandos. Abiem atvejais rodmuo taip pat pažymimas pasenusiu, jei ilgiau nei tris valandas nebuvo patikrintas arba paskutinė užklausa nepavyko. Būsena perskaičiuojama atnaujinant duomenis. Net sėkmingai gauti duomenys gali būti pasenę dėl portalo vėlavimo.
+
+## Laikas ir apribojimai
+
+- Naudojama `Europe/Vilnius` laiko juosta, nepriklausomai nuo HA nustatymų.
+- Pilnai dienai būtini visi tinkami intervalai; palaikomos ir 23 bei 25 valandų dienos, kai keičiamas laikas.
+- Rudenį pasikartojančios valandos išsaugomos atskirai su skirtingais UTC poslinkiais. Jei nėra abiejų pasikartojančių žymų, dviprasmiška valanda neskelbiama.
+- 15 ir 30 minučių intervalai sudedami į pilnos valandos energijos sumą.
+- Jutikliai rodo **istorinio laikotarpio energiją**, o ne momentinę galią ar kaupiamąjį skaitiklį. Jie neturi statistikos būsenos klasės ir nėra skirti naudoti kaip `total_increasing` šaltiniai energijos skydelyje. Galima naudoti jutiklių kortelėse, istorijoje ir automatizacijose.
+- Ieškoma tik grąžintame savaitės lange; senesnė istorija papildomai neužklausiama.
+- Naudojamos portalo svetainės užklausos, o ne oficiali vieša API. Laiko žymos laikomos intervalų pradžia pagal pateiktą protokolo aprašą. Šią prielaidą ir matavimo vienetus reikia patvirtinti su tikra paskyra.
+
+## Kūrimas ir patikra
+
+Su Python 3.13 ir įdiegtu `requests` paleiskite:
+
+```sh
+python -m unittest discover -s tests -v
+python -m compileall -q custom_components tests
+```
+
+„Windows“ aplinkoje taip pat reikia `tzdata`. Testai naudoja sintetinius atsakymus ir prie portalo nesijungia. Koordinatoriaus testuose HA sąsajos imituojamos. Patikra veikiančioje „Home Assistant“ aplinkoje ir su tikra eParkai paskyra dar neatlikta.
+
+Įgyvendinimas remiasi [algirdasc/hass-eparkai](https://github.com/algirdasc/hass-eparkai) protokolu (peržiūrėtas pakeitimas `cc05ea2af1f2ffd54f6f9c6ca4a502a3bf2175d5`) ir pateiktu [EPARKAI_INTEGRATION.md](EPARKAI_INTEGRATION.md) aprašu anglų kalba. Duomenų gavimo ir sumavimo kodas įgyvendintas iš naujo, griežčiau tikrinant duomenis ir nepriklausomai parenkant dienos bei valandos rodmenis.
