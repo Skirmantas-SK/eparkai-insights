@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from homeassistant.config_entries import ConfigEntries, ConfigEntry
+from homeassistant.config_entries import ConfigEntries, ConfigEntry, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -43,6 +43,7 @@ class HomeAssistantRuntimeTests(unittest.IsolatedAsyncioTestCase):
             version=1, minor_version=1, domain=DOMAIN, title="Test solar",
             data=DATA, options={}, source="user", unique_id=config_identity(DATA),
             discovery_keys=MappingProxyType({}), subentries_data=[],
+            state=ConfigEntryState.SETUP_IN_PROGRESS,
         )
         yesterday = datetime.now(TZ).date() - timedelta(days=1)
         self.intervals = [(stamp.replace(tzinfo=None), 1.0, stamp.isoformat())
