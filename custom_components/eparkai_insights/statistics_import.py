@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.models import StatisticMeanType
+from homeassistant.components.recorder.tasks import SynchronizeTask
 from homeassistant.components.recorder.statistics import (
     async_add_external_statistics, get_last_statistics, statistics_during_period,
 )
@@ -26,6 +27,14 @@ class StatisticsImporter:
         self.statistic_id = statistic_id(entry)
         self._lock = asyncio.Lock()
 
+    async def _async_wait_for_recorder(self, recorder):
+        """Always enqueue a barrier, including when a task is already executing."""
+        # async_block_till_done can return early when the queue is empty while
+        # an external-statistics task is still committing its own DB session.
+        future = self.hass.loop.create_future()
+        recorder.queue_task(SynchronizeTask(future))
+        await future
+
     async def async_import(self, hours):
         if not hours:
             return
@@ -34,7 +43,7 @@ class StatisticsImporter:
             # Called only after HA starts: recorder waits for startup before
             # processing its queue. Drain prior imports before reading the anchor.
             async with asyncio.timeout(30):
-                await recorder.async_block_till_done()
+                await self._async_wait_for_recorder(recorder)
                 start = min(datetime.fromisoformat(row["start"]).astimezone(timezone.utc) for row in hours)
                 recorded = await recorder.async_add_executor_job(
                     statistics_during_period, self.hass, start, None,
@@ -59,4 +68,4 @@ class StatisticsImporter:
                     "mean_type": StatisticMeanType.NONE,
                 }
                 async_add_external_statistics(self.hass, metadata, statistics)
-                await recorder.async_block_till_done()
+                await self._async_wait_for_recorder(recorder)
