@@ -1,0 +1,38 @@
+name: Klaida / Bug report
+description: Pranešti apie integracijos klaidą / Report an integration bug
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Neviešinkite slaptažodžių, slapukų, kliento ID ar adresų. / Do not include credentials, cookies, client IDs, or addresses.
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integracijos versija / Integration version
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant Core versija / version
+    validations:
+      required: true
+  - type: input
+    id: installer
+    attributes:
+      label: HACS / Marketplace versija ir diegimo būdas / version and installation method
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ir atkūrimo žingsniai / Problem and reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Laukiamas rezultatas / Expected behavior
+  - type: textarea
+    id: logs
+    attributes:
+      label: Nuasmeninti žurnalai / Redacted logs
+      render: text

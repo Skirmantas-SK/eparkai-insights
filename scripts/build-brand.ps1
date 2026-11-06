@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $projectRoot = Split-Path -Parent $PSScriptRoot
 [xml]$svg = Get-Content -LiteralPath (Join-Path $projectRoot 'assets/eparkai.svg') -Raw
-$brandDirectory = Join-Path $projectRoot 'custom_components/eparkai/brand'
+$brandDirectory = Join-Path $projectRoot 'custom_components/eparkai_insights/brand'
 New-Item -ItemType Directory -Force -Path $brandDirectory | Out-Null
 foreach ($theme in @('light', 'dark')) {
     $bitmap = [System.Drawing.Bitmap]::new(1024, 1024)

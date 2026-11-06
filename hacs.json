@@ -1,4 +1,5 @@
 {
-  "name": "eParkai saulės elektrinės gamyba",
-  "homeassistant": "2025.1.0"
+  "name": "eParkai įžvalgos",
+  "homeassistant": "2026.11.0",
+  "country": "LT"
 }

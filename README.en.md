@@ -1,6 +1,11 @@
-# eParkai Solar Production for Home Assistant
+# eParkai Insights for Home Assistant
 
-<img src="custom_components/eparkai/brand/icon.png" alt="eParkai integration icon" width="128" height="128">
+[![Validate](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
+[![Release](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)
+![Home Assistant](https://img.shields.io/badge/Home_Assistant-2026.11.0%2B-blue)
+[![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+<img src="custom_components/eparkai_insights/brand/icon.png" alt="eParkai integration icon" width="128" height="128">
 
 [Lietuviškas aprašas](README.md)
 
@@ -18,44 +23,69 @@ nighttime hours. Missing or invalid intervals are never silently replaced by zer
 
 ## Install
 
-With HACS, add `https://github.com/Skirmantas-SK/HA-eParkai` under **Custom
+HA 2026.11 includes Marketplace. This repository is a custom repository, not yet
+part of the default catalog. The integration is an independent community project,
+not affiliated with eParkai or Ignitis.
+
+[![Add repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Skirmantas-SK&repository=eparkai-insights&category=integration)
+[![Set up integration](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=eparkai_insights)
+
+With HACS, add `https://github.com/Skirmantas-SK/eparkai-insights` under **Custom
 repositories**, select **Integration**, and download **eParkai**. Restart Home
 Assistant and add **eParkai** under **Settings → Devices & services**.
 Configuration uses a UI setup assistant; no `configuration.yaml` entry is needed.
 
 Lithuanian setup, error messages, and sensor names are available when your Home
 Assistant profile language is Lithuanian. English translations remain available.
-The integration's listing name is **eParkai saulės elektrinės gamyba**.
+The integration's listing name is **eParkai įžvalgos**.
 
 For manual installation:
 
-The bundled integration icon requires Home Assistant 2026.3 or newer; older
-versions continue to work without the local brand image. Light/dark and 256/512px
+The bundled integration icon is available after installation in HA's Devices &
+services screen. Light/dark and 256/512px
 variants are included. This is original integration artwork, not the official
 eParkai logo. Sensor entities use `mdi:solar-power`. The editable source is
 `assets/eparkai.svg`; regenerate PNGs on Windows with `scripts/build-brand.ps1`.
 
-1. Copy `custom_components/eparkai` into your Home Assistant configuration's
+1. Copy `custom_components/eparkai_insights` into your Home Assistant configuration's
    `custom_components` directory. The resulting path is
-   `/config/custom_components/eparkai/manifest.json` on a typical installation.
+   `/config/custom_components/eparkai_insights/manifest.json` on a typical installation.
 2. Restart Home Assistant.
-3. Open **Settings → Devices & services → Add integration → eParkai Solar Production**.
+3. Open **Settings → Devices & services → Add integration → eParkai Insights**.
 4. Supply your login, client ID, plant ID, exact object address selector value,
    and sampling interval (60 minutes by default; 15 and 30 are supported).
 5. Add another integration entry for each plant/object combination.
 
-Requires Home Assistant 2025.1 or newer. Credentials are saved in Home Assistant's
+Requires Home Assistant 2026.11.0 or newer. Credentials are saved in Home Assistant's
 config entry storage; keep that storage and backups private. Session cookies stay
 in memory and are renewed after restart. No credentials belong in this repository.
 
-Repository ZIP downloads contain the `custom_components/eparkai` directory.
+Repository ZIP downloads contain the `custom_components/eparkai_insights` directory.
 The GitHub repository can also be added to HACS as a custom integration repository.
 
-If replacing `algirdasc/hass-eparkai`, back up the old component, replace its
-`custom_components/eparkai` directory, and remove its `eparkai:` YAML block before
-restarting. This integration uses the same domain and cannot run alongside it.
-It creates sensors and does not continue the old external-statistics importer.
-Existing recorded statistics are not deleted.
+### Migration and distinct identity
+
+The new domain `eparkai_insights` is independent of `algirdasc/hass-eparkai`'s
+`eparkai` domain. This integration provides period sensors; the other integration
+imports external energy statistics. It does not overwrite the other component.
+Both may coexist, but both will poll the portal.
+
+If you installed **our 0.1.x versions**, back up HA, remove that config entry and
+uninstall the old component through HACS, then install this repository and repeat
+UI setup once. Config entries, entity IDs and cached readings are not migrated
+across domains automatically. Update cards and automations. Existing history is
+not rewritten. GitHub URL redirects do not migrate a Home Assistant domain.
+
+### Why HACS may still show “icon not available”
+
+Pre-install catalog icons and installed HA integration icons use different image
+sources. Bundled `brand/` files work after installation. Before installation the
+catalog needs to process the release's images; custom repositories outside the
+catalog may have no icon. Older HACS frontends can also use the old brands CDN
+after installation. Metadata, a README image, and a release alone cannot guarantee
+that catalog thumbnail. Update HA/HACS, install, restart, then check **Devices &
+services**. Report your HA/HACS versions if the icon is still absent there.
+See [HA's branding documentation](https://contributors.home-assistant.io/marketplace/guides/integrations/#brand-images).
 
 ## Find the IDs
 
@@ -113,8 +143,14 @@ older-history pagination. No live account credentials were supplied during devel
 Run `python -m unittest discover -s tests -v` with Python 3.13 and `requests` installed.
 Windows also needs `tzdata`. Run `python -m compileall -q custom_components tests`
 for a syntax check. Tests use synthetic responses and do not contact the portal.
-Coordinator tests use lightweight Home Assistant boundary doubles; a full Home
-Assistant runtime/config-flow test and live account test have not been run.
+Offline coordinator tests use HA boundary doubles. A separate CI suite uses the
+actual Home Assistant library (2026.11.0 and latest stable), exercising config
+flow, coordinator, storage, lifecycle APIs and sensor metadata with mocked portal
+I/O and platform forwarding. A live account and full HA UI scenario remain
+unverified. See [Actions](https://github.com/Skirmantas-SK/eparkai-insights/actions)
+for current check results and [CONTRIBUTING.md](CONTRIBUTING.md) for commands.
+
+[Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
 
 The implementation follows the website protocol from
 [algirdasc/hass-eparkai](https://github.com/algirdasc/hass-eparkai)

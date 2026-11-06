@@ -1,0 +1,70 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Offline regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: python -m pip install requests tzdata
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/validate_metadata.py
+      - run: python -m compileall -q custom_components tests tests_ha
+
+  home-assistant:
+    name: Home Assistant ${{ matrix.version }} runtime
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["2026.11.0", "latest"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install Home Assistant
+        env:
+          HA_VERSION: ${{ matrix.version }}
+        run: |
+          if [ "$HA_VERSION" = latest ]; then
+            python -m pip install --upgrade homeassistant
+          else
+            python -m pip install "homeassistant==$HA_VERSION"
+          fi
+          python -m pip check
+      - run: python -m unittest discover -s tests_ha -v
+
+  hassfest:
+    name: Home Assistant manifest and translations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    name: HACS repository validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hacs/action@main
+        with:
+          category: integration
+          comment: false

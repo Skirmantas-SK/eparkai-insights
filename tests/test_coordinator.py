@@ -11,8 +11,8 @@ from unittest.mock import patch
 import requests
 
 from test_production import day_samples, payload
-from custom_components.eparkai.client import AuthenticationError
-from custom_components.eparkai.production import TZ, parse_intervals
+from custom_components.eparkai_insights.client import AuthenticationError
+from custom_components.eparkai_insights.production import TZ, parse_intervals
 
 
 class AuthFailed(Exception):
@@ -61,8 +61,8 @@ def load_coordinator():
         modules[name] = types.ModuleType(name)
         modules[name].__dict__.update(attributes)
     spec = importlib.util.spec_from_file_location(
-        "custom_components.eparkai.coordinator_test",
-        Path(__file__).resolve().parents[1] / "custom_components/eparkai/coordinator.py",
+        "custom_components.eparkai_insights.coordinator_test",
+        Path(__file__).resolve().parents[1] / "custom_components/eparkai_insights/coordinator.py",
     )
     module = importlib.util.module_from_spec(spec)
     with patch.dict(sys.modules, modules):

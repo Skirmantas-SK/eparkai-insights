@@ -8,15 +8,15 @@ import unittest
 
 # Load the provider package without importing Home Assistant's setup module.
 ROOT = Path(__file__).resolve().parents[1]
-if "custom_components.eparkai" not in sys.modules:
-    package = types.ModuleType("custom_components.eparkai")
-    package.__path__ = [str(ROOT / "custom_components" / "eparkai")]
-    sys.modules["custom_components.eparkai"] = package
+if "custom_components.eparkai_insights" not in sys.modules:
+    package = types.ModuleType("custom_components.eparkai_insights")
+    package.__path__ = [str(ROOT / "custom_components" / "eparkai_insights")]
+    sys.modules["custom_components.eparkai_insights"] = package
 
-from custom_components.eparkai.production import (
+from custom_components.eparkai_insights.production import (
     MONTHS, ParseError, TZ, expected_intervals, parse_intervals, select_production,
 )
-from custom_components.eparkai.client import AuthenticationError, EParkaiClient, Forms
+from custom_components.eparkai_insights.client import AuthenticationError, EParkaiClient, Forms
 
 
 def payload(samples):

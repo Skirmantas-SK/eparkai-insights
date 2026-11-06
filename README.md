@@ -1,6 +1,11 @@
-# eParkai saulės elektrinės gamyba
+# eParkai įžvalgos
 
-<img src="custom_components/eparkai/brand/icon.png" alt="eParkai integracijos piktograma" width="128" height="128">
+[![Patikra](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml/badge.svg)](https://github.com/Skirmantas-SK/eparkai-insights/actions/workflows/validate.yml)
+[![Versija](https://img.shields.io/github/v/release/Skirmantas-SK/eparkai-insights)](https://github.com/Skirmantas-SK/eparkai-insights/releases/latest)
+![Home Assistant](https://img.shields.io/badge/Home_Assistant-2026.11.0%2B-blue)
+[![MIT](https://img.shields.io/badge/Licencija-MIT-green)](LICENSE)
+
+<img src="custom_components/eparkai_insights/brand/icon.png" alt="eParkai integracijos piktograma" width="128" height="128">
 
 „Home Assistant“ integracija, skirta [eParkai](https://www.eparkai.lt) saulės elektrinės pagamintos energijos duomenims stebėti.
 
@@ -17,8 +22,13 @@ Valanda parenkama nepriklausomai nuo dienos. Pavyzdžiui, jei lapkričio 5 d. pa
 
 ## Diegimas per HACS
 
+HA 2026.11 turi integruotą „Marketplace“; taip pat galima naudoti HACS pasirinktinės saugyklos diegimą. Ši integracija dar nėra numatytajame kataloge.
+
+[![Pridėti saugyklą](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Skirmantas-SK&repository=eparkai-insights&category=integration)
+[![Pradėti sąranką](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=eparkai_insights)
+
 1. Atidarykite HACS ir pasirinkite **Custom repositories** (pasirinktinės saugyklos).
-2. Įveskite `https://github.com/Skirmantas-SK/HA-eParkai` ir pasirinkite tipą **Integration**.
+2. Įveskite `https://github.com/Skirmantas-SK/eparkai-insights` ir pasirinkite tipą **Integration**.
 3. Suraskite **eParkai** ir atsisiųskite integraciją.
 4. Paleiskite „Home Assistant“ iš naujo.
 5. Atidarykite **Nustatymai → Įrenginiai ir paslaugos → Pridėti integraciją** ir ieškokite **eParkai**.
@@ -31,18 +41,27 @@ Sąrankos vedlys, klaidų pranešimai ir jutiklių pavadinimai išversti į liet
 ### Rankinis diegimas
 
 Integracijos piktograma pateikiama kartu su komponentu (`brand/` kataloge).
-Jai rodyti reikia „Home Assistant“ 2026.3 arba naujesnės versijos.
-Senesnėse versijose integracija veikia be šios piktogramos. Palaikomos šviesi ir
+Ji rodoma HA įrenginių ir paslaugų lange įdiegus integraciją. Palaikomos šviesi ir
 tamsi temos bei didelės raiškos ekranai. Tai šiai integracijai sukurta piktograma,
 ne oficialus eParkai logotipas. Jutikliai naudoja `mdi:solar-power` piktogramą.
 
-Nukopijuokite `custom_components/eparkai` į „Home Assistant“ konfigūracijos aplanko `custom_components` katalogą. Įprastas galutinis kelias: `/config/custom_components/eparkai/manifest.json`. Paleiskite „Home Assistant“ iš naujo ir pridėkite integraciją per tą patį sąrankos vedlį.
+Nukopijuokite `custom_components/eparkai_insights` į „Home Assistant“ konfigūracijos aplanko `custom_components` katalogą. Įprastas galutinis kelias: `/config/custom_components/eparkai_insights/manifest.json`. Paleiskite „Home Assistant“ iš naujo ir pridėkite integraciją per tą patį sąrankos vedlį.
 
-Reikalinga „Home Assistant“ 2025.1 arba naujesnė versija. Prisijungimo duomenys saugomi „Home Assistant“ konfigūracijos įraše; saugokite šį katalogą ir atsargines kopijas. Sesijos slapukai laikomi atmintyje, po paleidimo iš naujo prisijungiama pakartotinai. Į Git saugyklą prisijungimo duomenų nekelkite.
+Reikalinga „Home Assistant“ 2026.11.0 arba naujesnė versija. Prisijungimo duomenys saugomi „Home Assistant“ konfigūracijos įraše; saugokite šį katalogą ir atsargines kopijas. Sesijos slapukai laikomi atmintyje, po paleidimo iš naujo prisijungiama pakartotinai. Į Git saugyklą prisijungimo duomenų nekelkite.
 
 ### Jei naudojote ankstesnę integraciją
 
-Keisdami `algirdasc/hass-eparkai`, pasidarykite seno komponento atsarginę kopiją, pakeiskite `custom_components/eparkai` katalogą ir prieš paleisdami iš naujo pašalinkite seną `eparkai:` bloką iš YAML konfigūracijos. Abi integracijos naudoja tą patį domeną ir kartu veikti negali. Ši versija sukuria jutiklius ir nebetęsia ankstesnio išorinės statistikos importavimo. Jau įrašyta statistika neištrinama.
+Ši integracija naudoja atskirą domeną `eparkai_insights` ir nepakeičia `algirdasc/hass-eparkai` (`eparkai`) failų. Ji pateikia dienos ir valandos jutiklius, o ne importuoja išorinę energijos statistiką. Neoficialus bendruomenės projektas, nesusijęs su eParkai ar Ignitis.
+
+Jei jau įdiegėte **mūsų 0.1.x versiją**: pasidarykite HA atsarginę kopiją, pašalinkite jos įrašą per „Įrenginiai ir paslaugos“ ir seną komponentą per HACS. Įdiekite naują saugyklą ir vieną kartą pakartokite sąranką. Senas domenas buvo `eparkai`, naujas – `eparkai_insights`; ankstesni įrašai, jutiklių ID ir podėlis automatiškai neperkeliami. Atnaujinkite korteles ir automatizacijas. Senojo GitHub adreso peradresavimas nepakeičia HA domeno.
+
+Jei naudojate kito autoriaus integraciją, jos šalinti nereikia. Abi gali veikti atskirai, tačiau abi užklausia portalą. Esama istorija šiuo atnaujinimu neperrašoma.
+
+### Kodėl HACS vis dar rodo „icon not available“?
+
+Neįdiegtos pasirinktinės saugyklos piktograma ir įdiegtos HA integracijos piktograma įkeliamos skirtingai. `brand/` failai veikia įdiegus komponentą; prieš diegimą katalogo piktograma priklauso nuo katalogo ir jo vaizdų paslaugos. Senesnis HACS gali naudoti seną CDN net po diegimo. Vien README paveikslėlis, GitHub aprašas ar naujas leidimas to negarantuoja.
+
+Atnaujinkite HA / HACS, įdiekite leidimą, paleiskite HA iš naujo ir tikrinkite **Įrenginiai ir paslaugos**. Jei ten piktogramos nėra, pateikite HA bei HACS versijas ir ekrano nuotrauką. [HA piktogramų dokumentacija](https://contributors.home-assistant.io/marketplace/guides/integrations/#brand-images).
 
 ## Kur rasti ID ir objekto adresą
 
@@ -83,6 +102,8 @@ python -m unittest discover -s tests -v
 python -m compileall -q custom_components tests
 ```
 
-„Windows“ aplinkoje taip pat reikia `tzdata`. Testai naudoja sintetinius atsakymus ir prie portalo nesijungia. Koordinatoriaus testuose HA sąsajos imituojamos. Patikra veikiančioje „Home Assistant“ aplinkoje ir su tikra eParkai paskyra dar neatlikta.
+„Windows“ aplinkoje taip pat reikia `tzdata`. Testai naudoja sintetinius atsakymus ir prie portalo nesijungia. Atskirame CI rinkinyje naudojama tikra „Home Assistant“ biblioteka (2026.11.0 ir naujausia stabili versija), tikrinama sąranka, koordinatorius, saugykla ir jutiklių metaduomenys. Portalo užklausos ir platformų persiuntimas imituojami. Gyva eParkai paskyra ir visas HA vartotojo sąsajos scenarijus dar nepatikrinti. Dabartiniai rezultatai – [Actions](https://github.com/Skirmantas-SK/eparkai-insights/actions).
+
+[Pakeitimai](CHANGELOG.md) · [Prisidėjimas](CONTRIBUTING.md) · [Saugumas](SECURITY.md) · [MIT licencija](LICENSE)
 
 Įgyvendinimas remiasi [algirdasc/hass-eparkai](https://github.com/algirdasc/hass-eparkai) protokolu (peržiūrėtas pakeitimas `cc05ea2af1f2ffd54f6f9c6ca4a502a3bf2175d5`) ir pateiktu [EPARKAI_INTEGRATION.md](EPARKAI_INTEGRATION.md) aprašu anglų kalba. Duomenų gavimo ir sumavimo kodas įgyvendintas iš naujo, griežčiau tikrinant duomenis ir nepriklausomai parenkant dienos bei valandos rodmenis.
