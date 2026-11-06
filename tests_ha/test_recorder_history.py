@@ -14,6 +14,7 @@ from homeassistant.config_entries import ConfigEntries
 from homeassistant import loader
 from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
+from homeassistant.helpers.recorder import async_initialize_recorder
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import statistics_during_period
 
@@ -27,6 +28,7 @@ class RecorderHistoryTests(unittest.IsolatedAsyncioTestCase):
         self.hass = HomeAssistant(self.directory.name)
         self.addAsyncCleanup(self.hass.async_stop, force=True)
         loader.async_setup(self.hass)
+        async_initialize_recorder(self.hass)
         self.hass.config_entries = ConfigEntries(self.hass, {})
         await self.hass.config_entries.async_initialize()
         self.assertTrue(await async_setup_component(self.hass, "recorder", {
